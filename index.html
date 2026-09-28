@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mani Crash Game</title>
+<style>
+:root{
+  --bg:#0f172a;--card:#111827;--panel:#1f2937;--text:#f8fafc;--muted:#94a3b8;
+  --border:#334155;--accent:#22c55e;--line:#38bdf8;--plane:#f59e0b;
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:760px;margin:auto;padding:16px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:14px}
+.row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.muted{color:var(--muted);font-size:14px}.big{font-size:30px;font-weight:700}
+.mult{font-size:50px;font-weight:800}.status{border:1px solid var(--border);border-radius:999px;padding:8px 12px;height:max-content}
+.stage{height:250px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:14px}
+svg{width:100%;height:100%}.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+input,button{min-height:46px;border-radius:12px;border:1px solid var(--border);font-size:16px}
+input{background:transparent;color:var(--text);padding:0 12px;width:100%}button{cursor:pointer;padding:0 14px}
+#startBtn{background:var(--accent);border:0;font-weight:700}#collectBtn{background:transparent;color:var(--text);font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}.history{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.pill{border:1px solid var(--border);padding:6px 10px;border-radius:999px;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+@media(max-width:620px){.controls{grid-template-columns:1fr}.mult{font-size:42px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="text-align:center;margin:4px 0 14px">
+    <div style="font-size:28px;font-weight:800;letter-spacing:.5px">MANI</div>
+    <div class="muted">Crash Points Game</div>
+  </div>
+  <div class="card row">
+    <div><div class="muted">Mani Game • Virtual balance</div><div class="big"><span id="balance">1000</span> coins</div></div>
+    <div style="text-align:right"><div class="muted">Best multiplier</div><div class="big"><span id="best">1.00</span>x</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div><div class="muted">Multiplier</div><div class="mult" id="multiplier">1.00x</div></div>
+      <div class="status" id="status">Ready</div>
+    </div>
+
+    <div class="stage">
+      <svg viewBox="0 0 700 250" aria-label="Crash game graph">
+        <line x1="30" y1="215" x2="670" y2="215" stroke="currentColor" opacity=".25"/>
+        <line x1="30" y1="25" x2="30" y2="215" stroke="currentColor" opacity=".25"/>
+        <path id="curve" d="M30 215" fill="none" stroke="var(--line)" stroke-width="5" stroke-linecap="round"/>
+        <g id="plane" transform="translate(30 215) rotate(-15)">
+          <path d="M-24 0 L-4 -5 L16 -20 L22 -17 L10 -4 L28 -1 L29 3 L10 6 L20 20 L14 22 L-4 8 L-24 4 Z" fill="var(--plane)"/>
+          <path d="M-25 1 L-38 -2 L-39 4 L-24 5 Z" fill="#cbd5e1" opacity=".8"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="controls">
+      <div><div class="muted" style="margin-bottom:5px">Stake (virtual coins)</div><input id="stake" type="number" min="10" max="500" step="10" value="50"></div>
+      <button id="startBtn">Start flight</button>
+      <button id="collectBtn" disabled>Collect</button>
+    </div>
+    <div class="muted" id="message" style="margin-top:10px">Choose a virtual stake and start the flight.</div>
+  </div>
+
+  <div class="card">
+    <div class="row"><strong>Mani • Recent flights</strong><button id="resetBtn" style="background:transparent;color:var(--text)">Reset demo</button></div>
+    <div id="history" class="history"><span class="muted">No flights yet.</span></div>
+    <div class="note">Demo only: virtual coins have no cash value and cannot be deposited or withdrawn.</div>
+  </div>
+</div>
+
+<script>
+const q=s=>document.querySelector(s);
+const balanceEl=q('#balance'),bestEl=q('#best'),multEl=q('#multiplier'),statusEl=q('#status'),
+stakeEl=q('#stake'),startBtn=q('#startBtn'),collectBtn=q('#collectBtn'),resetBtn=q('#resetBtn'),
+messageEl=q('#message'),historyEl=q('#history'),curve=q('#curve'),plane=q('#plane');
+
+let balance=1000,best=1,current=1,running=false,crashed=false,stake=50,startTime=0,crashAt=0,raf=null,history=[],lastX=30,lastY=215;
+const fmt=n=>Number(n).toFixed(2);
+
+function renderHistory(){
+  historyEl.innerHTML='';
+  if(!history.length){historyEl.innerHTML='<span class="muted">No flights yet.</span>';return;}
+  history.slice(0,10).forEach(x=>{const s=document.createElement('span');s.className='pill';s.textContent=x;historyEl.appendChild(s);});
+}
+function setGraph(progress,mult){
+  const x=30+620*Math.min(progress,1), y=Math.max(40,215-Math.log(mult)*76);
+  const c1=30+(x-30)*.35,c2=30+(x-30)*.78;
+  curve.setAttribute('d',`M30 215 C ${c1} 210, ${c2} ${Math.min(205,y+38)}, ${x} ${y}`);
+  const dx=x-lastX,dy=y-lastY,angle=Math.max(-35,Math.min(10,Math.atan2(dy,Math.max(dx,1))*180/Math.PI));
+  plane.setAttribute('transform',`translate(${x} ${y}) rotate(${angle})`);
+  lastX=x;lastY=y;
+}
+function crashPoint(){
+  const r=Math.random();
+  if(r<.18)return 1.05+Math.random()*.45;
+  if(r<.70)return 1.5+Math.random()*2.5;
+  if(r<.93)return 4+Math.random()*6;
+  return 10+Math.random()*15;
+}
+function stop(){if(raf)cancelAnimationFrame(raf);raf=null}
+function finishCrash(){
+  running=false;crashed=true;collectBtn.disabled=true;startBtn.disabled=false;statusEl.textContent='Crashed';
+  multEl.textContent=fmt(crashAt)+'x';plane.setAttribute('transform',`translate(${lastX} ${lastY}) rotate(38)`);
+  history.unshift('✈ '+fmt(crashAt)+'x');renderHistory();
+  messageEl.textContent=`Plane crashed at ${fmt(crashAt)}x. You lost ${stake} virtual coins.`;stop();
+}
+function animate(ts){
+  if(!running)return;
+  const e=Math.max(0,ts-startTime);
+  current=1+e/2600+Math.pow(e/8500,2)*3.2;
+  if(current>=crashAt){current=crashAt;setGraph(Math.min(e/9000,1),current);finishCrash();return;}
+  multEl.textContent=fmt(current)+'x';setGraph(Math.min(e/9000,1),current);raf=requestAnimationFrame(animate);
+}
+startBtn.addEventListener('click',()=>{
+  if(running)return;
+  const p=Number(stakeEl.value);
+  if(!Number.isFinite(p)||p<10){messageEl.textContent='Minimum virtual stake is 10 coins.';return;}
+  stake=Math.min(500,Math.floor(p));stakeEl.value=stake;
+  if(stake>balance){messageEl.textContent='Not enough virtual coins for that stake.';return;}
+  balance-=stake;balanceEl.textContent=balance;current=1;crashed=false;crashAt=crashPoint();running=true;startTime=performance.now();
+  startBtn.disabled=true;collectBtn.disabled=false;statusEl.textContent='Flying';messageEl.textContent='Plane is flying. Collect before it crashes.';
+  curve.setAttribute('d','M30 215');lastX=30;lastY=215;plane.setAttribute('transform','translate(30 215) rotate(-15)');
+  raf=requestAnimationFrame(animate);
+});
+collectBtn.addEventListener('click',()=>{
+  if(!running||crashed)return;
+  running=false;const win=Math.floor(stake*current);balance+=win;best=Math.max(best,current);
+  balanceEl.textContent=balance;bestEl.textContent=fmt(best);collectBtn.disabled=true;startBtn.disabled=false;statusEl.textContent='Collected';
+  history.unshift('✓ '+fmt(current)+'x');renderHistory();messageEl.textContent=`Collected at ${fmt(current)}x: +${win} virtual coins.`;stop();
+});
+resetBtn.addEventListener('click',()=>{
+  stop();balance=1000;best=1;current=1;running=false;crashed=false;history=[];
+  balanceEl.textContent='1000';bestEl.textContent='1.00';multEl.textContent='1.00x';statusEl.textContent='Ready';
+  messageEl.textContent='Choose a virtual stake and start the flight.';startBtn.disabled=false;collectBtn.disabled=true;
+  curve.setAttribute('d','M30 215');plane.setAttribute('transform','translate(30 215) rotate(-15)');renderHistory();
+});
+</script>
+</body>
+</html>
