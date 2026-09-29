@@ -439,7 +439,11 @@ resetBtn.addEventListener('click', ()=>{
   startBtn.disabled=false; collectBtn.disabled=true;
   curve.setAttribute('d','M40 255'); plane.setAttribute('transform','translate(40 255) rotate(-12)');
   messageEl.textContent='Choose your bet and start the flight.';
-  saveAll(); 
+  saveAll();
+  renderTop();
+  renderHistory();
+  renderRecentBets();
+});
 
 const firebaseConfig = {
   apiKey: "AIzaSyByg8KtxuSEtmC1c12i8pcmVhu16rf-uBI",
@@ -585,16 +589,12 @@ renderTop();
 renderHistory();
 renderRecentBets();
 
-});
-
 function randomOnline(){
   const base = Number(onlinePlayersEl.textContent || 18);
   const next = Math.max(8, Math.min(99, base + Math.floor(Math.random()*7)-3));
   onlinePlayersEl.textContent = next;
 }
 setInterval(randomOnline, 6000);
-
-renderTop(); renderHistory(); renderRecentBets();
 </script>
 </body>
 </html>
