@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MANI Sky Flight | Free Online Plane Flying Game</title>
+<title>MANI Sky Flight | Online Plane Game</title>
 <meta name="description" content="Play MANI Sky Flight, a free online plane flying points game with multiplier-style gameplay and virtual coins.">
 <meta name="keywords" content="free online plane game, plane flying game, multiplier points game, MANI Sky Flight">
 <meta name="robots" content="index,follow">
@@ -129,7 +129,7 @@ svg{width:100%; height:100%}
         <input id="signupPassword2" type="password" placeholder="Confirm password" minlength="4">
       </div>
       <button class="primary" id="createAccountBtn" style="width:100%;margin-top:10px">Create Demo Account</button>
-      <div class="authmsg" id="signupMsg">Demo account is saved only on this device/browser.</div>
+      <div class="authmsg" id="signupMsg">Your account is stored securely with Firebase Authentication.</div>
     </div>
 
     <div class="authpanel" id="signInPanel">
@@ -440,70 +440,151 @@ resetBtn.addEventListener('click', ()=>{
   curve.setAttribute('d','M40 255'); plane.setAttribute('transform','translate(40 255) rotate(-12)');
   messageEl.textContent='Choose your bet and start the flight.';
   saveAll(); 
-function getAccounts(){
-  try{return JSON.parse(localStorage.getItem('mani_accounts')||'{}')}catch(e){return {}}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyByg8KtxuSEtmC1c12i8pcmVhu16rf-uBI",
+  authDomain: "mani-sky-flight.firebaseapp.com",
+  projectId: "mani-sky-flight",
+  storageBucket: "mani-sky-flight.firebasestorage.app",
+  messagingSenderId: "102016773708",
+  appId: "1:102016773708:web:e71e2a16158edac4968ee9",
+  measurementId: "G-MMQWSMTZB4"
+};
+
+let firebaseAuth = null;
+let authApi = null;
+
+const lockNotice = document.createElement('div');
+lockNotice.className = 'card';
+lockNotice.id = 'lockNotice';
+lockNotice.innerHTML = '<div style="text-align:center;padding:12px"><div style="font-size:24px;font-weight:800;margin-bottom:8px">Sign in required</div><div class="muted">Create an account or sign in to play MANI Sky Flight.</div></div>';
+const accountCard = accountStatus.closest('.card');
+accountCard.insertAdjacentElement('afterend', lockNotice);
+
+function setGameLocked(locked){
+  const cards = Array.from(document.querySelectorAll('.card'));
+  cards.forEach(card=>{
+    if(card === accountCard || card === lockNotice) return;
+    card.style.display = locked ? 'none' : '';
+  });
+  lockNotice.style.display = locked ? '' : 'none';
 }
-function setAccounts(a){localStorage.setItem('mani_accounts',JSON.stringify(a))}
-function getCurrentUser(){return localStorage.getItem('mani_current_user')||''}
-function renderAccount(){
-  const email=getCurrentUser(), accounts=getAccounts();
-  if(email && accounts[email]){
-    accountStatus.textContent=accounts[email].name;
-    userLine.textContent='Signed in as '+email;
-    showSignIn.style.display='none';
-    showSignUp.style.display='none';
-    signOutBtn.style.display='inline-block';
-  }else{
-    accountStatus.textContent='Guest Player';
-    userLine.textContent='Sign up to save a demo player name on this browser.';
-    showSignIn.style.display='inline-block';
-    showSignUp.style.display='inline-block';
-    signOutBtn.style.display='none';
-  }
-}
+
 function hideAuthPanels(){
   signUpPanel.classList.remove('show');
   signInPanel.classList.remove('show');
 }
-showSignUp.addEventListener('click',()=>{signInPanel.classList.remove('show');signUpPanel.classList.toggle('show')});
-showSignIn.addEventListener('click',()=>{signUpPanel.classList.remove('show');signInPanel.classList.toggle('show')});
 
-createAccountBtn.addEventListener('click',()=>{
-  const name=signupName.value.trim(), email=signupEmail.value.trim().toLowerCase();
-  const p1=signupPassword.value, p2=signupPassword2.value;
-  if(name.length<2){signupMsg.textContent='Enter a player name.';return}
-  if(!email.includes('@')){signupMsg.textContent='Enter a valid email.';return}
-  if(p1.length<4){signupMsg.textContent='Password must be at least 4 characters.';return}
-  if(p1!==p2){signupMsg.textContent='Passwords do not match.';return}
-  const accounts=getAccounts();
-  if(accounts[email]){signupMsg.textContent='An account with this email already exists on this device.';return}
-  accounts[email]={name:name,password:p1};
-  setAccounts(accounts);
-  localStorage.setItem('mani_current_user',email);
-  signupMsg.textContent='Demo account created.';
-  hideAuthPanels();
-  renderAccount();
+function renderFirebaseUser(user){
+  if(user){
+    const display = user.displayName || (user.email ? user.email.split('@')[0] : 'Player');
+    accountStatus.textContent = display;
+    userLine.textContent = 'Signed in as ' + (user.email || display);
+    showSignIn.style.display = 'none';
+    showSignUp.style.display = 'none';
+    signOutBtn.style.display = 'inline-block';
+    setGameLocked(false);
+  }else{
+    accountStatus.textContent = 'Guest Player';
+    userLine.textContent = 'Sign up or sign in to play.';
+    showSignIn.style.display = 'inline-block';
+    showSignUp.style.display = 'inline-block';
+    signOutBtn.style.display = 'none';
+    setGameLocked(true);
+  }
+}
+
+showSignUp.addEventListener('click',()=>{
+  signInPanel.classList.remove('show');
+  signUpPanel.classList.toggle('show');
+});
+showSignIn.addEventListener('click',()=>{
+  signUpPanel.classList.remove('show');
+  signInPanel.classList.toggle('show');
 });
 
-signinBtn.addEventListener('click',()=>{
-  const email=signinEmail.value.trim().toLowerCase(), pass=signinPassword.value;
-  const accounts=getAccounts();
-  if(!accounts[email] || accounts[email].password!==pass){
-    signinMsg.textContent='Email or password is incorrect.';
+createAccountBtn.addEventListener('click', async ()=>{
+  if(!firebaseAuth || !authApi){
+    signupMsg.textContent='Firebase is still loading. Try again in a moment.';
     return;
   }
-  localStorage.setItem('mani_current_user',email);
-  signinMsg.textContent='Signed in.';
-  hideAuthPanels();
-  renderAccount();
+  const name=signupName.value.trim();
+  const email=signupEmail.value.trim().toLowerCase();
+  const p1=signupPassword.value;
+  const p2=signupPassword2.value;
+
+  if(name.length<2){signupMsg.textContent='Enter a player name.';return}
+  if(!email.includes('@')){signupMsg.textContent='Enter a valid email.';return}
+  if(p1.length<6){signupMsg.textContent='Password must be at least 6 characters.';return}
+  if(p1!==p2){signupMsg.textContent='Passwords do not match.';return}
+
+  createAccountBtn.disabled = true;
+  signupMsg.textContent='Creating account...';
+  try{
+    const cred = await authApi.createUserWithEmailAndPassword(firebaseAuth, email, p1);
+    await authApi.updateProfile(cred.user, {displayName:name});
+    signupMsg.textContent='Account created successfully.';
+    hideAuthPanels();
+    renderFirebaseUser(firebaseAuth.currentUser);
+  }catch(err){
+    const code = String(err && err.code || '');
+    if(code.includes('email-already-in-use')) signupMsg.textContent='This email already has an account.';
+    else if(code.includes('weak-password')) signupMsg.textContent='Choose a stronger password.';
+    else if(code.includes('invalid-email')) signupMsg.textContent='Enter a valid email address.';
+    else signupMsg.textContent='Sign up failed. Please try again.';
+  }finally{
+    createAccountBtn.disabled = false;
+  }
 });
 
-signOutBtn.addEventListener('click',()=>{
-  localStorage.removeItem('mani_current_user');
-  renderAccount();
+signinBtn.addEventListener('click', async ()=>{
+  if(!firebaseAuth || !authApi){
+    signinMsg.textContent='Firebase is still loading. Try again in a moment.';
+    return;
+  }
+  const email=signinEmail.value.trim().toLowerCase();
+  const pass=signinPassword.value;
+  if(!email || !pass){signinMsg.textContent='Enter email and password.';return}
+
+  signinBtn.disabled = true;
+  signinMsg.textContent='Signing in...';
+  try{
+    await authApi.signInWithEmailAndPassword(firebaseAuth, email, pass);
+    signinMsg.textContent='Signed in.';
+    hideAuthPanels();
+  }catch(err){
+    signinMsg.textContent='Email or password is incorrect.';
+  }finally{
+    signinBtn.disabled = false;
+  }
 });
 
-renderAccount(); renderTop(); renderHistory(); renderRecentBets();
+signOutBtn.addEventListener('click', async ()=>{
+  if(firebaseAuth && authApi){
+    await authApi.signOut(firebaseAuth);
+    hideAuthPanels();
+  }
+});
+
+(async ()=>{
+  try{
+    const appMod = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js");
+    const authMod = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+    const app = appMod.initializeApp(firebaseConfig);
+    firebaseAuth = authMod.getAuth(app);
+    authApi = authMod;
+    authMod.onAuthStateChanged(firebaseAuth, renderFirebaseUser);
+  }catch(e){
+    accountStatus.textContent='Login unavailable';
+    userLine.textContent='Firebase could not load. Check internet connection and refresh.';
+    setGameLocked(true);
+  }
+})();
+
+renderTop();
+renderHistory();
+renderRecentBets();
+
 });
 
 function randomOnline(){
