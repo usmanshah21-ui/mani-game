@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MANI Sky Flight | Free Online Plane Flying Game</title>
+<meta name="description" content="Play MANI Sky Flight, a free online plane flying points game with multiplier-style gameplay and virtual coins.">
+<meta name="keywords" content="free online plane game, plane flying game, multiplier points game, MANI Sky Flight">
+<meta name="robots" content="index,follow">
+<style>
+:root{
+  --bg1:#09111f; --bg2:#101b31; --card:#101826; --panel:#152235; --panel2:#1a2940;
+  --text:#f8fafc; --muted:#94a3b8; --border:#2e405a; --accent:#23d18b; --accent2:#38bdf8;
+  --danger:#fb7185; --gold:#f59e0b; --chip:#0f1a2b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; color:var(--text); font-family:Arial,Helvetica,sans-serif;
+  background:radial-gradient(circle at top, #1e3358 0%, var(--bg2) 35%, var(--bg1) 100%);
+}
+.wrap{max-width:860px; margin:auto; padding:18px}
+.brand{
+  text-align:center; padding:12px 10px 18px;
+}
+.brand h1{margin:0; font-size:34px; letter-spacing:.6px}
+.brand p{margin:6px 0 0; color:var(--muted)}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+  border:1px solid var(--border); border-radius:22px; padding:16px; margin-bottom:14px;
+  box-shadow:0 14px 30px rgba(0,0,0,.18);
+}
+.row{display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between}
+.stat{
+  flex:1 1 160px; background:rgba(255,255,255,.02); border:1px solid var(--border);
+  border-radius:18px; padding:14px;
+}
+.label{font-size:13px; color:var(--muted); margin-bottom:6px}
+.value{font-size:28px; font-weight:800}
+.stage{
+  height:300px; background:linear-gradient(180deg,#162949 0%,#0f1828 100%);
+  border:1px solid var(--border); border-radius:18px; overflow:hidden; margin-top:14px; position:relative;
+}
+.bigmult{font-size:56px; font-weight:900; letter-spacing:.4px}
+.status{
+  padding:10px 14px; border:1px solid var(--border); border-radius:999px; height:max-content;
+  background:rgba(255,255,255,.03);
+}
+.controls{
+  display:grid; grid-template-columns: 1.1fr 1fr 1fr; gap:10px; margin-top:14px;
+}
+button,input{
+  min-height:48px; border-radius:14px; border:1px solid var(--border); font-size:16px;
+}
+button{cursor:pointer}
+input{
+  width:100%; background:rgba(255,255,255,.02); color:var(--text); padding:0 12px;
+}
+.primary{background:linear-gradient(180deg,#29dd95,#11b977); color:#07151b; border:0; font-weight:800}
+.secondary{background:transparent; color:var(--text); font-weight:700}
+.secondary:disabled{opacity:.4; cursor:not-allowed}
+.deposit{background:linear-gradient(180deg,#5cc9ff,#1995ff); color:#021a27; border:0; font-weight:800}
+.chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.chip{
+  background:var(--chip); border:1px solid var(--border); color:var(--text);
+  border-radius:999px; padding:10px 14px; font-size:14px; cursor:pointer;
+}
+.chip.active{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset}
+.infobox{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px;
+}
+.smallbox{
+  background:rgba(255,255,255,.025); border:1px solid var(--border); border-radius:16px; padding:12px;
+}
+.smallbox .n{font-size:24px; font-weight:800}
+.muted{color:var(--muted)}
+.history{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+.pill{border:1px solid var(--border); padding:7px 11px; border-radius:999px; color:var(--muted); background:rgba(255,255,255,.02)}
+.note{font-size:12px; color:var(--muted); margin-top:10px}
+.footerline{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-top:12px}
+.badge{background:rgba(255,255,255,.03); border:1px solid var(--border); padding:7px 11px; border-radius:999px; color:var(--muted); font-size:13px}
+svg{width:100%; height:100%}
+.recentbets{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.betitem{background:rgba(255,255,255,.03); border:1px solid var(--border); color:var(--muted); padding:7px 10px; border-radius:999px; font-size:13px}
+
+.authbar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.authbar button{padding:0 18px}
+.authpanel{display:none;margin-top:12px;background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:18px;padding:14px}
+.authpanel.show{display:block}
+.authgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.authgrid input{min-width:0}
+.authmsg{margin-top:8px;font-size:13px;color:var(--muted)}
+.userline{text-align:center;margin-top:8px;color:var(--muted);font-size:14px}
+@media(max-width:700px){.authgrid{grid-template-columns:1fr}}
+
+@media(max-width:700px){
+  .controls{grid-template-columns:1fr}
+  .infobox{grid-template-columns:1fr}
+  .bigmult{font-size:44px}
+  .brand h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>MANI SKY FLIGHT</h1>
+    <p>Free Online Plane Flying Game • Virtual Coins Demo</p>
+  </div>
+
+  <div class="card">
+    <div class="row" style="align-items:center">
+      <div>
+        <div class="label">Player account</div>
+        <div class="value" style="font-size:22px" id="accountStatus">Guest Player</div>
+      </div>
+      <div class="authbar">
+        <button class="secondary" id="showSignIn">Sign In</button>
+        <button class="primary" id="showSignUp">Sign Up</button>
+        <button class="secondary" id="signOutBtn" style="display:none">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="authpanel" id="signUpPanel">
+      <strong>Create account</strong>
+      <div class="authgrid" style="margin-top:10px">
+        <input id="signupName" type="text" placeholder="Player name" maxlength="24">
+        <input id="signupEmail" type="email" placeholder="Email address">
+        <input id="signupPassword" type="password" placeholder="Password" minlength="4">
+        <input id="signupPassword2" type="password" placeholder="Confirm password" minlength="4">
+      </div>
+      <button class="primary" id="createAccountBtn" style="width:100%;margin-top:10px">Create Demo Account</button>
+      <div class="authmsg" id="signupMsg">Demo account is saved only on this device/browser.</div>
+    </div>
+
+    <div class="authpanel" id="signInPanel">
+      <strong>Sign in</strong>
+      <div class="authgrid" style="margin-top:10px">
+        <input id="signinEmail" type="email" placeholder="Email address">
+        <input id="signinPassword" type="password" placeholder="Password">
+      </div>
+      <button class="primary" id="signinBtn" style="width:100%;margin-top:10px">Sign In</button>
+      <div class="authmsg" id="signinMsg">Use the demo account created on this device.</div>
+    </div>
+    <div class="userline" id="userLine">Sign up to save a demo player name on this browser.</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="stat">
+        <div class="label">Wallet balance</div>
+        <div class="value"><span id="balance">1000</span> coins</div>
+      </div>
+      <div class="stat">
+        <div class="label">Best multiplier</div>
+        <div class="value"><span id="best">1.00</span>x</div>
+      </div>
+      <div class="stat">
+        <div class="label">Current flight</div>
+        <div class="value" id="statusText">Ready</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <div class="label">Multiplier</div>
+        <div class="bigmult" id="multiplier">1.00x</div>
+      </div>
+      <div class="status" id="status">Ready for take-off</div>
+    </div>
+
+    <div class="stage">
+      <svg viewBox="0 0 760 300" aria-label="Plane flying game">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#24437a"/>
+            <stop offset="100%" stop-color="#0f1828"/>
+          </linearGradient>
+          <linearGradient id="trail" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="planeBody" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffd36d"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="760" height="300" fill="url(#sky)"/>
+        <g opacity="0.55">
+          <ellipse cx="110" cy="56" rx="48" ry="18" fill="#fff"/>
+          <ellipse cx="145" cy="58" rx="35" ry="14" fill="#fff"/>
+          <ellipse cx="500" cy="72" rx="46" ry="16" fill="#fff"/>
+          <ellipse cx="530" cy="75" rx="31" ry="12" fill="#fff"/>
+          <ellipse cx="650" cy="48" rx="38" ry="14" fill="#fff"/>
+        </g>
+        <line x1="40" y1="255" x2="720" y2="255" stroke="#ffffff" opacity=".2"/>
+        <line x1="40" y1="28" x2="40" y2="255" stroke="#ffffff" opacity=".2"/>
+
+        <path id="curve" d="M40 255" fill="none" stroke="url(#trail)" stroke-width="6" stroke-linecap="round"/>
+        <g id="glow" opacity="0.25">
+          <circle id="g1" cx="40" cy="255" r="22" fill="#38bdf8"/>
+        </g>
+
+        <g id="plane" transform="translate(40 255) rotate(-12)">
+          <ellipse cx="0" cy="0" rx="38" ry="11" fill="url(#planeBody)"/>
+          <path d="M-8 -8 L30 -8 L48 0 L30 8 L-8 8 Z" fill="url(#planeBody)"/>
+          <path d="M-8 0 L-38 -18 L-24 -3 L-38 14 Z" fill="#ffd36d"/>
+          <path d="M-4 -3 L-22 -22 L8 -7 Z" fill="#fff2b0"/>
+          <path d="M2 4 L-22 23 L15 9 Z" fill="#e2e8f0"/>
+          <path d="M30 -7 L52 -14 L48 -3 Z" fill="#fde68a"/>
+          <circle cx="10" cy="-1" r="2.2" fill="#0f172a"/>
+          <text x="-18" y="4" font-size="8" font-weight="700" fill="#072235">MANI</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="label" style="margin-top:14px">Choose your demo bet (virtual coins)</div>
+    <div class="chips" id="chips">
+      <button class="chip active" data-bet="10">10</button>
+      <button class="chip" data-bet="50">50</button>
+      <button class="chip" data-bet="100">100</button>
+      <button class="chip" data-bet="250">250</button>
+    </div>
+
+    <div class="controls">
+      <div>
+        <div class="label" style="margin-bottom:6px">Custom bet amount</div>
+        <input id="stake" type="number" min="10" max="500" step="10" value="10">
+      </div>
+      <button class="primary" id="startBtn">Start Flight</button>
+      <button class="secondary" id="collectBtn" disabled>Collect</button>
+    </div>
+
+    <div class="footerline">
+      <button class="deposit" id="depositBtn">Deposit Demo Coins +500</button>
+      <div class="badge" id="message">Choose your bet and start the flight.</div>
+    </div>
+
+    <div class="infobox">
+      <div class="smallbox">
+        <div class="label">People playing now</div>
+        <div class="n" id="onlinePlayers">18</div>
+      </div>
+      <div class="smallbox">
+        <div class="label">Total bets placed</div>
+        <div class="n" id="totalBets">0</div>
+      </div>
+      <div class="smallbox">
+        <div class="label">Total coins bet</div>
+        <div class="n" id="totalCoins">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <strong>Recent flight results</strong>
+      <button class="secondary" id="resetBtn">Reset Demo</button>
+    </div>
+    <div class="history" id="history"><span class="muted">No flights yet.</span></div>
+
+    <div style="margin-top:14px"><strong>Recent bets</strong></div>
+    <div class="recentbets" id="recentBets">
+      <span class="muted">No bets yet.</span>
+    </div>
+
+    <div class="note">
+      Demo only: this version uses virtual coins only. No real-money deposit, withdrawal, or cash payout.
+      For real accounts shared across devices and real visitor tracking, a backend service like Firebase is needed.
+    </div>
+  </div>
+</div>
+
+<script>
+const q=s=>document.querySelector(s);
+const accountStatus=q('#accountStatus'), showSignIn=q('#showSignIn'), showSignUp=q('#showSignUp'),
+signOutBtn=q('#signOutBtn'), signUpPanel=q('#signUpPanel'), signInPanel=q('#signInPanel'),
+signupName=q('#signupName'), signupEmail=q('#signupEmail'), signupPassword=q('#signupPassword'),
+signupPassword2=q('#signupPassword2'), createAccountBtn=q('#createAccountBtn'),
+signinEmail=q('#signinEmail'), signinPassword=q('#signinPassword'), signinBtn=q('#signinBtn'),
+signupMsg=q('#signupMsg'), signinMsg=q('#signinMsg'), userLine=q('#userLine');
+const balanceEl=q('#balance'), bestEl=q('#best'), multEl=q('#multiplier'), statusEl=q('#status'), statusText=q('#statusText'),
+stakeEl=q('#stake'), startBtn=q('#startBtn'), collectBtn=q('#collectBtn'), depositBtn=q('#depositBtn'), resetBtn=q('#resetBtn'),
+messageEl=q('#message'), historyEl=q('#history'), recentBetsEl=q('#recentBets'),
+curve=q('#curve'), plane=q('#plane'), glow=q('#g1'),
+onlinePlayersEl=q('#onlinePlayers'), totalBetsEl=q('#totalBets'), totalCoinsEl=q('#totalCoins');
+
+let balance = Number(localStorage.getItem('mani_balance') || 1000);
+let best = Number(localStorage.getItem('mani_best') || 1);
+let totalBets = Number(localStorage.getItem('mani_total_bets') || 0);
+let totalCoins = Number(localStorage.getItem('mani_total_coins') || 0);
+let history = JSON.parse(localStorage.getItem('mani_history') || '[]');
+let recentBets = JSON.parse(localStorage.getItem('mani_recent_bets') || '[]');
+
+let current=1, running=false, crashed=false, stake=10, startTime=0, crashAt=0, raf=null, lastX=40, lastY=255;
+const fmt=n=>Number(n).toFixed(2);
+
+function saveAll(){
+  localStorage.setItem('mani_balance', balance);
+  localStorage.setItem('mani_best', best);
+  localStorage.setItem('mani_total_bets', totalBets);
+  localStorage.setItem('mani_total_coins', totalCoins);
+  localStorage.setItem('mani_history', JSON.stringify(history.slice(0,10)));
+  localStorage.setItem('mani_recent_bets', JSON.stringify(recentBets.slice(0,12)));
+}
+function renderTop(){
+  balanceEl.textContent = balance;
+  bestEl.textContent = fmt(best);
+  totalBetsEl.textContent = totalBets;
+  totalCoinsEl.textContent = totalCoins;
+}
+function renderHistory(){
+  historyEl.innerHTML='';
+  if(!history.length){ historyEl.innerHTML='<span class="muted">No flights yet.</span>'; return; }
+  history.slice(0,10).forEach(x=>{
+    const s=document.createElement('span'); s.className='pill'; s.textContent=x; historyEl.appendChild(s);
+  });
+}
+function renderRecentBets(){
+  recentBetsEl.innerHTML='';
+  if(!recentBets.length){ recentBetsEl.innerHTML='<span class="muted">No bets yet.</span>'; return; }
+  recentBets.slice(0,12).forEach(x=>{
+    const s=document.createElement('span'); s.className='betitem'; s.textContent=x; recentBetsEl.appendChild(s);
+  });
+}
+function setGraph(progress,mult){
+  const x = 40 + 660*Math.min(progress,1);
+  const y = Math.max(42, 255 - Math.log(mult)*86);
+  const c1 = 40 + (x-40)*.34;
+  const c2 = 40 + (x-40)*.78;
+  curve.setAttribute('d', `M40 255 C ${c1} 250, ${c2} ${Math.min(240, y+42)}, ${x} ${y}`);
+  const dx=x-lastX, dy=y-lastY;
+  const angle=Math.max(-35, Math.min(10, Math.atan2(dy, Math.max(dx,1))*180/Math.PI));
+  plane.setAttribute('transform', `translate(${x} ${y}) rotate(${angle})`);
+  glow.setAttribute('cx', x); glow.setAttribute('cy', y);
+  lastX=x; lastY=y;
+}
+function crashPoint(){
+  const r=Math.random();
+  if(r<.18) return 1.05+Math.random()*.45;
+  if(r<.70) return 1.5+Math.random()*2.5;
+  if(r<.93) return 4+Math.random()*6;
+  return 10+Math.random()*15;
+}
+function stop(){ if(raf) cancelAnimationFrame(raf); raf=null; }
+function addRecentBet(txt){
+  recentBets.unshift(txt);
+  recentBets = recentBets.slice(0,12);
+  renderRecentBets();
+}
+function finishCrash(){
+  running=false; crashed=true; collectBtn.disabled=true; startBtn.disabled=false;
+  statusEl.textContent='Flight crashed'; statusText.textContent='Crashed';
+  multEl.textContent = fmt(crashAt)+'x';
+  plane.setAttribute('transform', `translate(${lastX} ${lastY}) rotate(40)`);
+  history.unshift('✈ ' + fmt(crashAt) + 'x');
+  history = history.slice(0,10);
+  renderHistory(); saveAll();
+  messageEl.textContent = `Flight crashed at ${fmt(crashAt)}x`;
+  stop();
+}
+function animate(ts){
+  if(!running) return;
+  const e=Math.max(0, ts-startTime);
+  current = 1 + e/2500 + Math.pow(e/8200,2)*3.35;
+  if(current>=crashAt){
+    current=crashAt; setGraph(Math.min(e/9000,1), current); finishCrash(); return;
+  }
+  multEl.textContent = fmt(current)+'x';
+  setGraph(Math.min(e/9000,1), current);
+  raf=requestAnimationFrame(animate);
+}
+function setSelectedChip(value){
+  document.querySelectorAll('.chip').forEach(btn=>{
+    btn.classList.toggle('active', Number(btn.dataset.bet)===Number(value));
+  });
+}
+document.querySelectorAll('.chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    stakeEl.value = btn.dataset.bet;
+    setSelectedChip(btn.dataset.bet);
+  });
+});
+stakeEl.addEventListener('input', ()=> setSelectedChip(-1));
+
+startBtn.addEventListener('click', ()=>{
+  if(running) return;
+  const p = Number(stakeEl.value);
+  if(!Number.isFinite(p) || p<10){ messageEl.textContent='Minimum demo bet is 10 coins.'; return; }
+  stake = Math.min(500, Math.floor(p));
+  stakeEl.value = stake;
+  if(stake>balance){ messageEl.textContent='Not enough demo coins. Use Deposit Demo Coins.'; return; }
+
+  balance -= stake;
+  totalBets += 1;
+  totalCoins += stake;
+  addRecentBet('Bet ' + stake + ' coins');
+  renderTop();
+
+  current = 1; crashed = false; crashAt = crashPoint(); running = true; startTime = performance.now();
+  startBtn.disabled=true; collectBtn.disabled=false;
+  statusEl.textContent='Flying'; statusText.textContent='Flying';
+  messageEl.textContent='Flight started. Collect before crash.';
+  curve.setAttribute('d','M40 255'); lastX=40; lastY=255; plane.setAttribute('transform','translate(40 255) rotate(-12)');
+  saveAll();
+  raf = requestAnimationFrame(animate);
+});
+
+collectBtn.addEventListener('click', ()=>{
+  if(!running || crashed) return;
+  running=false;
+  const win = Math.floor(stake * current);
+  balance += win;
+  best = Math.max(best, current);
+  renderTop();
+  collectBtn.disabled=true; startBtn.disabled=false;
+  statusEl.textContent='Collected'; statusText.textContent='Collected';
+  history.unshift('✓ ' + fmt(current) + 'x'); history = history.slice(0,10);
+  renderHistory();
+  addRecentBet('Collected at ' + fmt(current) + 'x');
+  messageEl.textContent = `Collected ${win} coins at ${fmt(current)}x`;
+  saveAll();
+  stop();
+});
+
+depositBtn.addEventListener('click', ()=>{
+  balance += 500;
+  renderTop();
+  saveAll();
+  messageEl.textContent='500 demo coins added to wallet.';
+});
+
+resetBtn.addEventListener('click', ()=>{
+  stop();
+  balance=1000; best=1; totalBets=0; totalCoins=0; current=1; running=false; crashed=false;
+  history=[]; recentBets=[];
+  multEl.textContent='1.00x'; statusEl.textContent='Ready for take-off'; statusText.textContent='Ready';
+  startBtn.disabled=false; collectBtn.disabled=true;
+  curve.setAttribute('d','M40 255'); plane.setAttribute('transform','translate(40 255) rotate(-12)');
+  messageEl.textContent='Choose your bet and start the flight.';
+  saveAll(); 
+function getAccounts(){
+  try{return JSON.parse(localStorage.getItem('mani_accounts')||'{}')}catch(e){return {}}
+}
+function setAccounts(a){localStorage.setItem('mani_accounts',JSON.stringify(a))}
+function getCurrentUser(){return localStorage.getItem('mani_current_user')||''}
+function renderAccount(){
+  const email=getCurrentUser(), accounts=getAccounts();
+  if(email && accounts[email]){
+    accountStatus.textContent=accounts[email].name;
+    userLine.textContent='Signed in as '+email;
+    showSignIn.style.display='none';
+    showSignUp.style.display='none';
+    signOutBtn.style.display='inline-block';
+  }else{
+    accountStatus.textContent='Guest Player';
+    userLine.textContent='Sign up to save a demo player name on this browser.';
+    showSignIn.style.display='inline-block';
+    showSignUp.style.display='inline-block';
+    signOutBtn.style.display='none';
+  }
+}
+function hideAuthPanels(){
+  signUpPanel.classList.remove('show');
+  signInPanel.classList.remove('show');
+}
+showSignUp.addEventListener('click',()=>{signInPanel.classList.remove('show');signUpPanel.classList.toggle('show')});
+showSignIn.addEventListener('click',()=>{signUpPanel.classList.remove('show');signInPanel.classList.toggle('show')});
+
+createAccountBtn.addEventListener('click',()=>{
+  const name=signupName.value.trim(), email=signupEmail.value.trim().toLowerCase();
+  const p1=signupPassword.value, p2=signupPassword2.value;
+  if(name.length<2){signupMsg.textContent='Enter a player name.';return}
+  if(!email.includes('@')){signupMsg.textContent='Enter a valid email.';return}
+  if(p1.length<4){signupMsg.textContent='Password must be at least 4 characters.';return}
+  if(p1!==p2){signupMsg.textContent='Passwords do not match.';return}
+  const accounts=getAccounts();
+  if(accounts[email]){signupMsg.textContent='An account with this email already exists on this device.';return}
+  accounts[email]={name:name,password:p1};
+  setAccounts(accounts);
+  localStorage.setItem('mani_current_user',email);
+  signupMsg.textContent='Demo account created.';
+  hideAuthPanels();
+  renderAccount();
+});
+
+signinBtn.addEventListener('click',()=>{
+  const email=signinEmail.value.trim().toLowerCase(), pass=signinPassword.value;
+  const accounts=getAccounts();
+  if(!accounts[email] || accounts[email].password!==pass){
+    signinMsg.textContent='Email or password is incorrect.';
+    return;
+  }
+  localStorage.setItem('mani_current_user',email);
+  signinMsg.textContent='Signed in.';
+  hideAuthPanels();
+  renderAccount();
+});
+
+signOutBtn.addEventListener('click',()=>{
+  localStorage.removeItem('mani_current_user');
+  renderAccount();
+});
+
+renderAccount(); renderTop(); renderHistory(); renderRecentBets();
+});
+
+function randomOnline(){
+  const base = Number(onlinePlayersEl.textContent || 18);
+  const next = Math.max(8, Math.min(99, base + Math.floor(Math.random()*7)-3));
+  onlinePlayersEl.textContent = next;
+}
+setInterval(randomOnline, 6000);
+
+renderTop(); renderHistory(); renderRecentBets();
+</script>
+</body>
+</html>
