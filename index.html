@@ -7,6 +7,14 @@
 <meta name="description" content="Play MANI Sky Flight, a free online plane flying points game with multiplier-style gameplay and virtual coins.">
 <meta name="keywords" content="free online plane game, plane flying game, multiplier points game, MANI Sky Flight">
 <meta name="robots" content="index,follow">
+<meta property="og:title" content="MANI Game Zone">
+<meta property="og:description" content="Play Sky Flight, Flappy Plane, Car Dodge and more. Challenge your friends and beat the high score.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://usmanshah21-ui.github.io/mani-game/">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":["VideoGame","WebApplication"],"name":"MANI Game Zone","applicationCategory":"GameApplication","operatingSystem":"Web","url":"https://usmanshah21-ui.github.io/mani-game/","description":"Free browser arcade game collection with Sky Flight, Flappy Plane, Car Dodge and challenges."}
+</script>
 <style>
 :root{
   --bg1:#09111f; --bg2:#101b31; --card:#101826; --panel:#152235; --panel2:#1a2940;
@@ -194,6 +202,22 @@ svg{width:100%; height:100%}
   </div>
 
   
+  <div class="card" id="dailyChallengeCard">
+    <div class="row" style="align-items:center">
+      <div>
+        <div class="label">Daily Challenge</div>
+        <div class="value" style="font-size:22px" id="dailyChallengeTitle">Today’s Mission</div>
+        <div class="muted" id="dailyChallengeText" style="margin-top:6px">Loading challenge...</div>
+      </div>
+      <div class="stat" style="min-width:110px">
+        <div class="label">Streak</div>
+        <div class="value"><span id="challengeStreak">0</span> 🔥</div>
+      </div>
+    </div>
+    <button class="primary" id="challengeFriendBtn" style="width:100%;margin-top:12px">Challenge a Friend</button>
+    <div class="muted" id="challengeShareStatus" style="margin-top:8px">Share today’s challenge and compare scores.</div>
+  </div>
+
   <div class="ad-slot" id="adTop"><small>Advertisement space — activates after ad-network approval</small></div>
   <div class="card gamehub" id="gameHub">
     <div class="label">MANI Game Zone</div>
@@ -809,6 +833,60 @@ const catchArea=document.getElementById('catchArea'), catchStart=document.getEle
 let catchScore=0,catchRunning=false,catchInterval=null;
 function spawnCoin(){if(!catchRunning)return;const coin=document.createElement('div');coin.className='catch-coin';coin.textContent='🪙';coin.style.left=Math.max(4,Math.random()*(catchArea.clientWidth-40))+'px';coin.style.top=Math.max(4,Math.random()*(catchArea.clientHeight-40))+'px';coin.addEventListener('click',()=>{catchScore++;catchScoreEl.textContent='Score: '+catchScore;coin.remove();});catchArea.appendChild(coin);setTimeout(()=>coin.remove(),1400);}
 catchStart.addEventListener('click',()=>{if(catchRunning)return;catchRunning=true;catchScore=0;catchScoreEl.textContent='Score: 0';catchArea.innerHTML='';catchStart.disabled=true;catchInterval=setInterval(spawnCoin,600);setTimeout(()=>{catchRunning=false;clearInterval(catchInterval);catchArea.innerHTML='';catchStart.disabled=false;catchStart.textContent='Play Again';catchScoreEl.textContent='Final score: '+catchScore;},20000);});
+
+const dailyChallengeTitle=document.getElementById('dailyChallengeTitle');
+const dailyChallengeText=document.getElementById('dailyChallengeText');
+const challengeStreak=document.getElementById('challengeStreak');
+const challengeFriendBtn=document.getElementById('challengeFriendBtn');
+const challengeShareStatus=document.getElementById('challengeShareStatus');
+
+const DAILY_CHALLENGES=[
+  {title:'Flappy Ace',text:'Score 5 or more in Flappy Plane.'},
+  {title:'Traffic Master',text:'Score 8 or more in Car Dodge.'},
+  {title:'Coin Hunter',text:'Catch 12 coins in one Coin Catch round.'},
+  {title:'Sky Pilot',text:'Beat your previous best Sky Flight multiplier.'}
+];
+function getDayKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function getDayNumber(){
+  const d=new Date(); return Math.floor(new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()/86400000);
+}
+const todayChallenge=DAILY_CHALLENGES[getDayNumber()%DAILY_CHALLENGES.length];
+dailyChallengeTitle.textContent=todayChallenge.title;
+dailyChallengeText.textContent=todayChallenge.text;
+
+let streak=Number(localStorage.getItem('mani_challenge_streak')||0);
+const lastVisit=localStorage.getItem('mani_challenge_last_visit');
+const todayKey=getDayKey();
+if(lastVisit!==todayKey){
+  if(lastVisit){
+    const prev=new Date(lastVisit+'T00:00:00');
+    const now=new Date(todayKey+'T00:00:00');
+    const diff=Math.round((now-prev)/86400000);
+    streak=diff===1?streak+1:1;
+  }else streak=1;
+  localStorage.setItem('mani_challenge_streak',String(streak));
+  localStorage.setItem('mani_challenge_last_visit',todayKey);
+}
+challengeStreak.textContent=String(streak);
+
+challengeFriendBtn.addEventListener('click',async()=>{
+  const challengeUrl=location.origin+location.pathname+'?challenge='+encodeURIComponent(todayChallenge.title);
+  const shareText='I challenge you on MANI Game Zone: '+todayChallenge.title+' — '+todayChallenge.text;
+  try{
+    if(navigator.share){
+      await navigator.share({title:'MANI Game Zone Challenge',text:shareText,url:challengeUrl});
+      challengeShareStatus.textContent='Challenge share opened.';
+    }else{
+      await navigator.clipboard.writeText(shareText+' '+challengeUrl);
+      challengeShareStatus.textContent='Challenge copied — send it to a friend.';
+    }
+  }catch(e){
+    if(e?.name!=='AbortError') challengeShareStatus.textContent='Could not share. Try again.';
+  }
+});
 
 const GAME_URL = 'https://usmanshah21-ui.github.io/mani-game/';
 const SHARE_TEXT = 'Play MANI Sky Flight';
