@@ -3,325 +3,107 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MANI NEON RUSH | Arcade Racing Game</title>
-<meta name="description" content="Play MANI Neon Rush, a polished mobile arcade highway racing game with traffic, nitro, sound effects and daily challenges.">
+<title>MANI Game Zone | 3D Browser Games</title>
+<meta name="description" content="MANI Game Zone — polished 3D browser games with racing, space survival, mobile controls, sound and instant play.">
 <meta name="robots" content="index,follow">
-<meta property="og:title" content="MANI NEON RUSH">
-<meta property="og:description" content="Race the neon highway, dodge traffic, collect nitro and beat your best distance.">
+<meta property="og:title" content="MANI Game Zone">
+<meta property="og:description" content="Play polished 3D browser games instantly — racing, space survival and more.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://usmanshah21-ui.github.io/mani-game/">
 <meta name="theme-color" content="#070b18">
 <style>
-:root{--bg:#050816;--panel:#0d1428;--panel2:#101b34;--text:#f7fbff;--muted:#94a3b8;--cyan:#24d8ff;--violet:#8b5cf6;--pink:#ff3d9a;--green:#3cf2a4;--border:rgba(148,163,184,.18)}
+:root{--bg:#050816;--panel:#0c1326;--panel2:#111a31;--text:#f8fafc;--muted:#9fb0c7;--cyan:#31d9ff;--violet:#8b5cf6;--pink:#ff4b9d;--border:rgba(148,163,184,.16)}
 *{box-sizing:border-box}
-html,body{margin:0;background:radial-gradient(circle at 50% -10%,#172554 0,#070b18 42%,#03050d 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{min-height:100%;padding:16px}
-button,input{font:inherit}
-.shell{width:min(100%,760px);margin:0 auto}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-.brand h1{margin:0;font-size:clamp(26px,7vw,42px);letter-spacing:.08em;font-weight:900}
-.brand h1 span{color:var(--cyan);text-shadow:0 0 24px rgba(36,216,255,.45)}
-.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.iconbtn{border:1px solid var(--border);background:rgba(15,23,42,.72);color:var(--text);border-radius:14px;min-width:46px;height:46px;padding:0 14px}
-.gameframe{position:relative;border:1px solid rgba(36,216,255,.22);border-radius:24px;overflow:hidden;background:#050816;box-shadow:0 30px 80px rgba(0,0,0,.42)}
-canvas{display:block;width:100%;height:auto;touch-action:none;background:#050816}
-.hud{position:absolute;left:0;right:0;top:0;padding:14px;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;pointer-events:none}
-.hudbox{background:rgba(3,7,18,.5);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:8px 10px}
-.hudbox.center{text-align:center}
-.hudbox.right{text-align:right}
-.label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0c7}
-.value{font-weight:900;font-size:17px;margin-top:1px}
-.nitrobar{height:7px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:5px}
-.nitrofill{height:100%;width:40%;background:linear-gradient(90deg,var(--violet),var(--cyan));box-shadow:0 0 12px rgba(36,216,255,.6)}
-.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:linear-gradient(180deg,rgba(3,7,18,.18),rgba(3,7,18,.78));backdrop-filter:blur(3px)}
-.overlay.hidden{display:none}
-.modal{width:min(100%,430px);background:linear-gradient(180deg,rgba(16,27,52,.94),rgba(7,11,24,.96));border:1px solid rgba(36,216,255,.26);border-radius:22px;padding:22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.kicker{font-size:12px;color:var(--cyan);font-weight:800;letter-spacing:.18em;text-transform:uppercase}
-.modal h2{font-size:36px;line-height:1;margin:8px 0 10px}
-.modal p{color:var(--muted);margin:0 0 16px;line-height:1.45}
-.primary{width:100%;border:0;border-radius:16px;min-height:52px;font-weight:900;color:#031019;background:linear-gradient(135deg,#54f4ff,#22c7ff 55%,#7c3aed);box-shadow:0 12px 30px rgba(36,216,255,.2)}
-.secondary{width:100%;border:1px solid var(--border);border-radius:14px;min-height:46px;font-weight:800;color:var(--text);background:rgba(255,255,255,.05)}
-.controls{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:10px;padding:12px;background:linear-gradient(180deg,rgba(5,8,22,.96),#050816)}
-.ctrl{border:1px solid rgba(255,255,255,.1);border-radius:18px;min-height:58px;background:linear-gradient(180deg,#111b32,#0a1122);color:white;font-weight:900;font-size:18px;box-shadow:inset 0 1px rgba(255,255,255,.05)}
-.ctrl:active{transform:translateY(1px);background:#162444}
-.ctrl.nitro{background:linear-gradient(135deg,#5416a9,#0d7dad);border-color:rgba(36,216,255,.3)}
-.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.card{background:linear-gradient(180deg,rgba(16,27,52,.72),rgba(9,15,31,.82));border:1px solid var(--border);border-radius:18px;padding:14px}
-.card h3{margin:0 0 8px;font-size:15px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.tog{border:1px solid var(--border);background:#0b1428;color:#dbeafe;border-radius:12px;min-height:40px;padding:0 12px;font-weight:800}
-.small{font-size:12px;color:var(--muted)}
-.challenge{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.progress{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:7px}
-.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--cyan))}
-.share{margin-top:10px}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+radial-gradient(circle at 15% 0%,rgba(49,217,255,.15),transparent 30%),
+radial-gradient(circle at 90% 10%,rgba(139,92,246,.18),transparent 35%),
+linear-gradient(180deg,#080d1d 0,#04060d 100%);color:var(--text)}
+body{padding:18px}
+.shell{width:min(100%,980px);margin:0 auto}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:16px 0 22px}
+.logo h1{font-size:clamp(34px,8vw,64px);line-height:.9;margin:0;font-weight:950;letter-spacing:-.04em}
+.logo h1 span{color:var(--cyan);text-shadow:0 0 28px rgba(49,217,255,.32)}
+.logo p{margin:10px 0 0;color:var(--muted);max-width:640px}
+.badge{padding:9px 12px;border:1px solid var(--border);border-radius:999px;background:rgba(10,18,36,.65);color:#dbeafe;font-size:12px;font-weight:800;white-space:nowrap}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.game{position:relative;min-height:420px;border:1px solid var(--border);border-radius:26px;overflow:hidden;background:#0a1020;isolation:isolate}
+.game:before{content:"";position:absolute;inset:0;z-index:-2}
+.game.kart:before{background:
+radial-gradient(circle at 50% 22%,rgba(255,190,36,.33),transparent 20%),
+linear-gradient(150deg,#172554 0,#111827 38%,#220d35 100%)}
+.game.space:before{background:
+radial-gradient(circle at 74% 18%,rgba(49,217,255,.27),transparent 18%),
+radial-gradient(circle at 22% 35%,rgba(139,92,246,.25),transparent 24%),
+linear-gradient(150deg,#080a1d,#03040a)}
+.game:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 0,rgba(4,6,13,.28) 45%,rgba(4,6,13,.94) 100%)}
+.scene{height:230px;position:relative;overflow:hidden}
+.road{position:absolute;left:50%;bottom:-55px;width:72%;height:270px;transform:translateX(-50%) perspective(480px) rotateX(64deg);background:linear-gradient(90deg,#151b27,#272f40 48%,#151b27);border-left:4px solid #31d9ff;border-right:4px solid #ff4b9d;box-shadow:0 0 30px rgba(49,217,255,.25)}
+.road:after{content:"";position:absolute;left:49.5%;top:0;width:4px;height:100%;background:repeating-linear-gradient(to bottom,#fff 0 18px,transparent 18px 42px);opacity:.7}
+.car{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);width:96px;height:48px;border-radius:42% 42% 26% 26%;background:linear-gradient(135deg,#f8fafc 0,#fbbf24 14%,#ef4444 70%,#7f1d1d 100%);box-shadow:0 12px 24px rgba(0,0,0,.45),0 0 25px rgba(239,68,68,.35)}
+.car:before{content:"";position:absolute;left:19px;right:19px;top:-16px;height:30px;border-radius:12px 12px 3px 3px;background:linear-gradient(#7dd3fc,#0f172a)}
+.car:after{content:"";position:absolute;left:8px;right:8px;bottom:-6px;height:7px;background:linear-gradient(90deg,#ff4b9d 0 22%,transparent 22% 78%,#31d9ff 78%);filter:blur(1px)}
+.stars{position:absolute;inset:0;background-image:
+radial-gradient(circle at 10% 20%,#fff 0 1px,transparent 1.5px),
+radial-gradient(circle at 40% 35%,#c4b5fd 0 1px,transparent 1.5px),
+radial-gradient(circle at 72% 12%,#67e8f9 0 1.5px,transparent 2px),
+radial-gradient(circle at 88% 42%,#fff 0 1px,transparent 1.5px);
+background-size:120px 90px,180px 140px,220px 160px,150px 110px}
+.planet{position:absolute;right:38px;top:25px;width:105px;height:105px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#67e8f9,#4338ca 55%,#111827 75%);box-shadow:0 0 45px rgba(49,217,255,.28)}
+.ship{position:absolute;left:50%;top:105px;transform:translateX(-50%) rotate(-7deg);width:0;height:0;border-left:32px solid transparent;border-right:32px solid transparent;border-bottom:86px solid #cbd5e1;filter:drop-shadow(0 8px 16px rgba(0,0,0,.45))}
+.ship:after{content:"";position:absolute;left:-8px;top:69px;width:16px;height:58px;background:linear-gradient(#31d9ff,transparent);filter:blur(2px)}
+.content{padding:20px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:900}
+h2{font-size:31px;margin:6px 0 8px}
+.desc{color:var(--muted);line-height:1.5;min-height:68px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.tag{font-size:11px;padding:6px 8px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:#dbeafe}
+.play{display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;border:0;border-radius:16px;text-decoration:none;font-weight:950;color:#06101b;background:linear-gradient(135deg,#67e8f9,#31d9ff 48%,#8b5cf6);box-shadow:0 14px 30px rgba(49,217,255,.14)}
+.bottom{margin-top:16px;display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--muted);font-size:12px}
 .adslot{display:none}
-@media(max-width:520px){body{padding:8px}.gameframe{border-radius:18px}.hud{padding:8px}.hudbox{padding:7px 8px}.value{font-size:14px}.controls{gap:7px;padding:8px}.ctrl{min-height:56px}.meta{grid-template-columns:1fr}.brand p{font-size:12px}}
+@media(max-width:760px){body{padding:10px}.top{align-items:flex-start;flex-direction:column}.games{grid-template-columns:1fr}.game{min-height:400px}.scene{height:210px}.desc{min-height:auto}.badge{white-space:normal}}
 </style>
 </head>
 <body>
 <div class="shell">
-  <div class="topbar">
-    <div class="brand">
-      <h1>MANI <span>NEON RUSH</span></h1>
-      <p>Highway arcade racing • traffic • nitro • music • SFX</p>
+  <div class="top">
+    <div class="logo">
+      <h1>MANI <span>GAME ZONE</span></h1>
+      <p>No more old-style mini games. These are real 3D browser games with modern graphics, audio, physics and mobile controls.</p>
     </div>
-    <button class="iconbtn" id="pauseBtn" type="button">Ⅱ</button>
+    <div class="badge">3D • Mobile • Sound • Instant Play</div>
   </div>
 
-  <div class="gameframe">
-    <canvas id="game" width="420" height="720" aria-label="MANI Neon Rush racing game"></canvas>
+  <div class="games">
+    <article class="game kart">
+      <div class="scene"><div class="road"></div><div class="car"></div></div>
+      <div class="content">
+        <div class="eyebrow">3D Racing</div>
+        <h2>MANI Kart</h2>
+        <div class="desc">Race against AI opponents on a full 3D circuit. Drift, collect power-ups, boost, chase podium position and race multiple laps.</div>
+        <div class="tags"><span class="tag">AI Racers</span><span class="tag">Drift</span><span class="tag">Power-ups</span><span class="tag">Engine SFX</span><span class="tag">Mobile Touch</span></div>
+        <a class="play" href="kart.html">PLAY 3D RACING</a>
+      </div>
+    </article>
 
-    <div class="hud">
-      <div class="hudbox">
-        <div class="label">Distance</div>
-        <div class="value"><span id="distance">0</span> m</div>
+    <article class="game space">
+      <div class="scene"><div class="stars"></div><div class="planet"></div><div class="ship"></div></div>
+      <div class="content">
+        <div class="eyebrow">3D Space Survival</div>
+        <h2>MANI Antigravity</h2>
+        <div class="desc">Pilot a neon spacecraft through warped space, dodge gravity wells, build near-miss scores and survive escalating difficulty.</div>
+        <div class="tags"><span class="tag">WebGL 3D</span><span class="tag">Shaders</span><span class="tag">Particles</span><span class="tag">Dynamic Audio</span><span class="tag">Mobile Input</span></div>
+        <a class="play" href="space.html">PLAY SPACE SURVIVAL</a>
       </div>
-      <div class="hudbox center">
-        <div class="label">Speed</div>
-        <div class="value"><span id="speed">0</span> km/h</div>
-      </div>
-      <div class="hudbox right">
-        <div class="label">Nitro</div>
-        <div class="nitrobar"><div class="nitrofill" id="nitroFill"></div></div>
-      </div>
-    </div>
-
-    <div class="overlay" id="startOverlay">
-      <div class="modal">
-        <div class="kicker">Flagship Arcade Game</div>
-        <h2>NEON RUSH</h2>
-        <p>Swipe or use LEFT / RIGHT to dodge traffic. Collect blue nitro cells, then hold NITRO for a speed burst.</p>
-        <button class="primary" id="startBtn" type="button">START RACE</button>
-        <div class="small" style="margin-top:10px">Best distance: <b id="bestStart">0 m</b></div>
-      </div>
-    </div>
-
-    <div class="overlay hidden" id="gameOverOverlay">
-      <div class="modal">
-        <div class="kicker">Race Over</div>
-        <h2 id="finalDistance">0 m</h2>
-        <p id="resultText">Beat your best and challenge a friend.</p>
-        <button class="primary" id="restartBtn" type="button">RACE AGAIN</button>
-        <button class="secondary share" id="shareBtn" type="button">CHALLENGE A FRIEND</button>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="ctrl" id="leftBtn" type="button">◀ LEFT</button>
-      <button class="ctrl nitro" id="nitroBtn" type="button">⚡ NITRO</button>
-      <button class="ctrl" id="rightBtn" type="button">RIGHT ▶</button>
-    </div>
+    </article>
   </div>
 
-  <div class="meta">
-    <div class="card">
-      <div class="row">
-        <div>
-          <h3>Audio</h3>
-          <div class="small">Generated in-game audio — no copyrighted track.</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="tog" id="musicBtn" type="button">Music ON</button>
-          <button class="tog" id="sfxBtn" type="button">SFX ON</button>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Daily Challenge</h3>
-      <div class="row"><div class="small" id="challengeText">Drive 1,500 m in one run</div><b id="challengeValue">0%</b></div>
-      <div class="progress"><div id="challengeProgress"></div></div>
-      <div class="challenge small">Daily streak: <b id="streak">1 🔥</b></div>
-    </div>
+  <div class="bottom">
+    <span>MANI Game Zone</span>
+    <span>Open-source game engines adapted under their respective MIT licenses.</span>
   </div>
 
-  <div class="adslot" id="adTop" aria-hidden="true"></div>
-  <div class="adslot" id="adGameOver" aria-hidden="true"></div>
+  <div class="adslot" id="ad-top"></div>
+  <div class="adslot" id="ad-bottom"></div>
 </div>
-
-<script>
-(()=>{
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const distanceEl=document.getElementById('distance'),speedEl=document.getElementById('speed'),nitroFill=document.getElementById('nitroFill');
-const startOverlay=document.getElementById('startOverlay'),gameOverOverlay=document.getElementById('gameOverOverlay');
-const startBtn=document.getElementById('startBtn'),restartBtn=document.getElementById('restartBtn'),pauseBtn=document.getElementById('pauseBtn');
-const leftBtn=document.getElementById('leftBtn'),rightBtn=document.getElementById('rightBtn'),nitroBtn=document.getElementById('nitroBtn');
-const shareBtn=document.getElementById('shareBtn'),musicBtn=document.getElementById('musicBtn'),sfxBtn=document.getElementById('sfxBtn');
-const bestStart=document.getElementById('bestStart'),finalDistance=document.getElementById('finalDistance'),resultText=document.getElementById('resultText');
-const challengeProgress=document.getElementById('challengeProgress'),challengeValue=document.getElementById('challengeValue'),streakEl=document.getElementById('streak');
-
-const W=canvas.width,H=canvas.height,ROAD_TOP=188,ROAD_BOTTOM=H+30;
-let running=false,paused=false,last=0,time=0,distance=0,speed=190,targetSpeed=190,nitro=40,nitroHeld=false;
-let player={lane:1,x:W/2,y:H-130,targetX:W/2,tilt:0},traffic=[],pickups=[],particles=[],stars=[];
-let spawnTimer=0,pickupTimer=0,roadPhase=0,screenShake=0,flash=0;
-let best=Number(localStorage.getItem('mani_neon_best')||0);
-let musicOn=localStorage.getItem('mani_music')!=='0',sfxOn=localStorage.getItem('mani_sfx')!=='0';
-bestStart.textContent=Math.floor(best)+' m';musicBtn.textContent='Music '+(musicOn?'ON':'OFF');sfxBtn.textContent='SFX '+(sfxOn?'ON':'OFF');
-
-for(let i=0;i<70;i++)stars.push({x:Math.random()*W,y:Math.random()*ROAD_TOP,s:.5+Math.random()*1.8,a:.25+Math.random()*.7});
-
-function roadWidthAt(y){const t=Math.max(0,Math.min(1,(y-ROAD_TOP)/(ROAD_BOTTOM-ROAD_TOP)));return 48+Math.pow(t,.82)*360}
-function laneX(l,y){const rw=roadWidthAt(y),left=W/2-rw/2;return left+rw*((l+.5)/3)}
-function perspective(y){return .22+Math.max(0,Math.min(1,(y-ROAD_TOP)/(ROAD_BOTTOM-ROAD_TOP)))*1.05}
-
-function roundedRect(x,y,w,h,r){
-  const rr=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath()
-}
-function glowLine(x1,y1,x2,y2,color,width,blur){
-  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.shadowColor=color;ctx.shadowBlur=blur;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore()
-}
-function drawBackground(){
-  const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#070a1a');sky.addColorStop(.28,'#111044');sky.addColorStop(.52,'#0a1730');sky.addColorStop(1,'#03060e');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-  const glow=ctx.createRadialGradient(W/2,ROAD_TOP,4,W/2,ROAD_TOP,170);glow.addColorStop(0,'rgba(255,61,154,.34)');glow.addColorStop(.35,'rgba(100,64,255,.13)');glow.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=glow;ctx.fillRect(0,20,W,310);
-  ctx.fillStyle='#dbeafe';for(const s of stars){ctx.globalAlpha=s.a*(.65+.35*Math.sin(time*.001+s.x));ctx.fillRect(s.x,s.y,s.s,s.s)}ctx.globalAlpha=1;
-  ctx.fillStyle='#050817';ctx.beginPath();ctx.moveTo(0,ROAD_TOP+20);for(let x=0;x<=W;x+=18){const hh=18+((x*17)%63);ctx.lineTo(x,ROAD_TOP-hh)}ctx.lineTo(W,ROAD_TOP+40);ctx.lineTo(0,ROAD_TOP+40);ctx.fill();
-  for(let x=12;x<W;x+=33){ctx.fillStyle=(x%66)?'rgba(36,216,255,.34)':'rgba(255,61,154,.32)';ctx.fillRect(x,ROAD_TOP-14-((x*17)%42),2,5)}
-}
-function drawRoad(){
-  ctx.fillStyle='#101522';ctx.beginPath();ctx.moveTo(W/2-24,ROAD_TOP);ctx.lineTo(W/2+24,ROAD_TOP);ctx.lineTo(W+20,ROAD_BOTTOM);ctx.lineTo(-20,ROAD_BOTTOM);ctx.closePath();ctx.fill();
-  const edgeGrad=ctx.createLinearGradient(0,ROAD_TOP,0,H);edgeGrad.addColorStop(0,'rgba(139,92,246,.2)');edgeGrad.addColorStop(1,'rgba(36,216,255,.9)');
-  ctx.strokeStyle=edgeGrad;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(W/2-25,ROAD_TOP);ctx.lineTo(-10,ROAD_BOTTOM);ctx.moveTo(W/2+25,ROAD_TOP);ctx.lineTo(W+10,ROAD_BOTTOM);ctx.stroke();
-  for(let lane=1;lane<3;lane++){
-    for(let i=0;i<16;i++){
-      let z=((i*74+roadPhase)%1180)/1180, y=ROAD_TOP+Math.pow(z,2.0)*(ROAD_BOTTOM-ROAD_TOP);
-      let y2=ROAD_TOP+Math.pow(Math.min(1,z+.038),2.0)*(ROAD_BOTTOM-ROAD_TOP);
-      ctx.strokeStyle='rgba(226,232,240,'+(0.18+z*.65)+')';ctx.lineWidth=1+z*4;ctx.beginPath();ctx.moveTo(laneX(lane-.5,y),y);ctx.lineTo(laneX(lane-.5,y2),y2);ctx.stroke()
-    }
-  }
-  for(let i=0;i<10;i++){
-    let z=((i*143+roadPhase*.72)%1180)/1180,y=ROAD_TOP+Math.pow(z,1.9)*(ROAD_BOTTOM-ROAD_TOP),rw=roadWidthAt(y);
-    ctx.fillStyle='rgba(36,216,255,'+(z*.18)+')';ctx.fillRect(W/2-rw/2-20-z*24,y,2+z*3,6+z*14);
-    ctx.fillStyle='rgba(255,61,154,'+(z*.16)+')';ctx.fillRect(W/2+rw/2+18+z*24,y,2+z*3,6+z*14)
-  }
-}
-function drawCar(x,y,scale,color,playerCar=false,tilt=0){
-  ctx.save();ctx.translate(x,y);ctx.rotate(tilt);ctx.scale(scale,scale);
-  ctx.shadowColor=color;ctx.shadowBlur=playerCar?22:10;
-  const grad=ctx.createLinearGradient(-24,-45,24,40);grad.addColorStop(0,'#f8fafc');grad.addColorStop(.12,color);grad.addColorStop(.62,color);grad.addColorStop(1,'#070b14');
-  ctx.fillStyle=grad;roundedRect(-25,-46,50,92,13);ctx.fill();
-  ctx.shadowBlur=0;ctx.fillStyle='#07101c';roundedRect(-17,-28,34,27,8);ctx.fill();
-  ctx.fillStyle='rgba(98,210,255,.55)';roundedRect(-14,-25,28,19,5);ctx.fill();
-  ctx.fillStyle='#080b12';ctx.fillRect(-29,-29,7,23);ctx.fillRect(22,-29,7,23);ctx.fillRect(-29,18,7,22);ctx.fillRect(22,18,7,22);
-  ctx.fillStyle=playerCar?'#24d8ff':'#ffecd1';ctx.fillRect(-18,-42,12,4);ctx.fillRect(6,-42,12,4);
-  ctx.fillStyle='#ff2f6d';ctx.fillRect(-18,38,12,4);ctx.fillRect(6,38,12,4);
-  if(playerCar){ctx.fillStyle='#d8fbff';ctx.fillRect(-3,-43,6,82);ctx.fillStyle='rgba(36,216,255,.55)';ctx.fillRect(-19,6,38,3)}
-  ctx.restore()
-}
-function drawPickup(p){
-  const sc=perspective(p.y);ctx.save();ctx.translate(laneX(p.lane,p.y),p.y);ctx.scale(sc,sc);ctx.rotate(time*.003);
-  ctx.shadowColor='#24d8ff';ctx.shadowBlur=18;ctx.fillStyle='#24d8ff';ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,r=i%2?12:18;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#05101b';ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('N',0,1);ctx.restore()
-}
-function drawTraffic(t){
-  const sc=perspective(t.y),x=laneX(t.lane,t.y);drawCar(x,t.y,sc,t.color,false,0)
-}
-function drawParticles(){
-  for(const p of particles){ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,p.s,p.s)}ctx.globalAlpha=1
-}
-function drawPlayer(){
-  if(nitroHeld&&nitro>0&&running&&!paused){for(let i=0;i<3;i++){ctx.fillStyle=i%2?'#24d8ff':'#8b5cf6';ctx.globalAlpha=.65;ctx.beginPath();ctx.moveTo(player.x-12+i*12,player.y+43);ctx.lineTo(player.x-7+i*12,player.y+72+Math.random()*14);ctx.lineTo(player.x-1+i*12,player.y+43);ctx.fill()}ctx.globalAlpha=1}
-  drawCar(player.x,player.y,1.03,'#8b5cf6',true,player.tilt)
-}
-function draw(){
-  ctx.save();if(screenShake>0){ctx.translate((Math.random()-.5)*screenShake,(Math.random()-.5)*screenShake);screenShake*=.88}
-  drawBackground();drawRoad();pickups.sort((a,b)=>a.y-b.y).forEach(drawPickup);traffic.sort((a,b)=>a.y-b.y).forEach(drawTraffic);drawParticles();drawPlayer();
-  if(flash>0){ctx.fillStyle='rgba(255,255,255,'+flash+')';ctx.fillRect(0,0,W,H);flash*=.78}ctx.restore()
-}
-
-function spawnTraffic(){
-  const lanes=[0,1,2],lane=lanes[Math.floor(Math.random()*3)];
-  const colors=['#ff3d9a','#f59e0b','#22c55e','#38bdf8','#a78bfa'];
-  traffic.push({lane,y:ROAD_TOP-32,speed:.76+Math.random()*.34,color:colors[Math.floor(Math.random()*colors.length)]})
-}
-function spawnPickup(){pickups.push({lane:Math.floor(Math.random()*3),y:ROAD_TOP-20})}
-function burst(x,y,c,n=18){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*7,vy:(Math.random()-.5)*7,s:2+Math.random()*4,life:1,c})}
-function move(dir){
-  if(!running||paused)return;player.lane=Math.max(0,Math.min(2,player.lane+dir));player.targetX=laneX(player.lane,player.y);player.tilt=dir*.13;sfxMove()
-}
-function update(dt){
-  if(!running||paused)return;
-  const boosting=nitroHeld&&nitro>0;
-  targetSpeed=boosting?310:Math.min(255,190+distance/48);speed+=(targetSpeed-speed)*Math.min(1,dt*2.2);
-  if(boosting){nitro=Math.max(0,nitro-dt*24)} else nitro=Math.min(100,nitro+dt*2.8);
-  distance+=speed*dt*.058;roadPhase=(roadPhase+speed*dt*1.25)%1180;
-  player.x+=(player.targetX-player.x)*Math.min(1,dt*10);player.tilt*=Math.pow(.04,dt);
-
-  spawnTimer-=dt;if(spawnTimer<=0){spawnTraffic();spawnTimer=Math.max(.34,1.04-distance/4800)+Math.random()*.35}
-  pickupTimer-=dt;if(pickupTimer<=0){spawnPickup();pickupTimer=4+Math.random()*3.5}
-  for(const t of traffic)t.y+=speed*dt*(1.0-t.speed)+105*dt;
-  for(const p of pickups)p.y+=speed*dt*.55+72*dt;
-  for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life-=dt*1.7}
-  particles=particles.filter(p=>p.life>0);traffic=traffic.filter(t=>t.y<H+100);pickups=pickups.filter(p=>p.y<H+70);
-
-  for(const t of traffic){
-    const tx=laneX(t.lane,t.y),sc=perspective(t.y);
-    if(Math.abs(t.y-player.y)<54*sc+34&&Math.abs(tx-player.x)<29*sc+28){crash();return}
-  }
-  for(let i=pickups.length-1;i>=0;i--){
-    const p=pickups[i],px=laneX(p.lane,p.y);
-    if(Math.abs(p.y-player.y)<46&&Math.abs(px-player.x)<38){nitro=Math.min(100,nitro+34);burst(player.x,player.y-20,'#24d8ff',20);pickups.splice(i,1);flash=.12;sfxPickup()}
-  }
-
-  distanceEl.textContent=Math.floor(distance);speedEl.textContent=Math.floor(speed);nitroFill.style.width=nitro+'%';
-  const pr=Math.min(100,distance/1500*100);challengeProgress.style.width=pr+'%';challengeValue.textContent=Math.floor(pr)+'%';
-}
-function loop(ts){if(!last)last=ts;const dt=Math.min(.033,(ts-last)/1000);last=ts;time=ts;update(dt);draw();requestAnimationFrame(loop)}
-requestAnimationFrame(loop);
-
-let audioCtx=null,master=null,engineOsc=null,engineGain=null,musicTimer=null;
-function ensureAudio(){
-  if(audioCtx)return;audioCtx=new (window.AudioContext||window.webkitAudioContext)();master=audioCtx.createGain();master.gain.value=.45;master.connect(audioCtx.destination);
-}
-function tone(freq,dur=.12,type='sine',gain=.08,delay=0){
-  if(!sfxOn)return;ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain(),t=audioCtx.currentTime+delay;o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(master);o.start(t);o.stop(t+dur)
-}
-function sfxMove(){tone(180,.08,'triangle',.035)}
-function sfxPickup(){tone(660,.12,'sine',.07);tone(990,.2,'sine',.05,.07)}
-function sfxCrash(){tone(85,.45,'sawtooth',.13);tone(52,.6,'square',.06)}
-function startEngine(){if(!sfxOn)return;ensureAudio();if(engineOsc)return;engineOsc=audioCtx.createOscillator();engineGain=audioCtx.createGain();engineOsc.type='sawtooth';engineOsc.frequency.value=52;engineGain.gain.value=.018;engineOsc.connect(engineGain);engineGain.connect(master);engineOsc.start()}
-function stopEngine(){if(engineOsc){engineOsc.stop();engineOsc=null;engineGain=null}}
-function musicStart(){
-  if(!musicOn)return;ensureAudio();if(musicTimer)return;
-  const seq=[220,261.63,329.63,293.66,196,246.94,329.63,261.63];let i=0;
-  const step=()=>{if(!musicOn||!audioCtx)return;const now=audioCtx.currentTime;[seq[i%seq.length],seq[(i+2)%seq.length]/2].forEach((f,k)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=k?'sine':'triangle';o.frequency.value=f;g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(k?.018:.026,now+.15);g.gain.linearRampToValueAtTime(.001,now+1.5);o.connect(g);g.connect(master);o.start(now);o.stop(now+1.55)});i++};
-  step();musicTimer=setInterval(step,1450)
-}
-function musicStop(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
-
-function reset(){
-  distance=0;speed=190;targetSpeed=190;nitro=40;traffic=[];pickups=[];particles=[];spawnTimer=.8;pickupTimer=2.8;roadPhase=0;screenShake=0;flash=0;
-  player.lane=1;player.x=laneX(1,player.y);player.targetX=player.x;player.tilt=0;
-  distanceEl.textContent='0';speedEl.textContent='190';nitroFill.style.width='40%';challengeProgress.style.width='0';challengeValue.textContent='0%'
-}
-function startGame(){
-  ensureAudio();if(audioCtx.state==='suspended')audioCtx.resume();reset();running=true;paused=false;last=performance.now();startOverlay.classList.add('hidden');gameOverOverlay.classList.add('hidden');pauseBtn.textContent='Ⅱ';startEngine();musicStart()
-}
-function crash(){
-  running=false;nitroHeld=false;screenShake=16;flash=.26;sfxCrash();stopEngine();burst(player.x,player.y,'#ff3d9a',34);
-  if(distance>best){best=distance;localStorage.setItem('mani_neon_best',String(best))}
-  finalDistance.textContent=Math.floor(distance)+' m';resultText.textContent=distance>=best?'New best distance! Share it and challenge a friend.':'Best: '+Math.floor(best)+' m — race again and beat it.';
-  bestStart.textContent=Math.floor(best)+' m';setTimeout(()=>gameOverOverlay.classList.remove('hidden'),380)
-}
-function togglePause(){
-  if(!running)return;paused=!paused;pauseBtn.textContent=paused?'▶':'Ⅱ';if(paused)stopEngine();else{last=performance.now();startEngine()}
-}
-startBtn.addEventListener('click',startGame);restartBtn.addEventListener('click',startGame);pauseBtn.addEventListener('click',togglePause);
-leftBtn.addEventListener('pointerdown',e=>{e.preventDefault();move(-1)});rightBtn.addEventListener('pointerdown',e=>{e.preventDefault();move(1)});
-nitroBtn.addEventListener('pointerdown',e=>{e.preventDefault();nitroHeld=true});['pointerup','pointercancel','pointerleave'].forEach(ev=>nitroBtn.addEventListener(ev,()=>nitroHeld=false));
-
-let sx=0,sy=0;
-canvas.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});
-canvas.addEventListener('pointerup',e=>{const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>30&&Math.abs(dx)>Math.abs(dy))move(dx>0?1:-1)});
-
-musicBtn.addEventListener('click',()=>{musicOn=!musicOn;localStorage.setItem('mani_music',musicOn?'1':'0');musicBtn.textContent='Music '+(musicOn?'ON':'OFF');if(musicOn){ensureAudio();musicStart()}else musicStop()});
-sfxBtn.addEventListener('click',()=>{sfxOn=!sfxOn;localStorage.setItem('mani_sfx',sfxOn?'1':'0');sfxBtn.textContent='SFX '+(sfxOn?'ON':'OFF');if(!sfxOn)stopEngine();else if(running&&!paused)startEngine()});
-shareBtn.addEventListener('click',async()=>{const url='https://usmanshah21-ui.github.io/mani-game/';const text='I drove '+Math.floor(distance)+' m in MANI Neon Rush. Beat my score!';try{if(navigator.share)await navigator.share({title:'MANI Neon Rush',text,url});else location.href='https://wa.me/?text='+encodeURIComponent(text+' '+url)}catch(e){}});
-
-function updateStreak(){
- const d=new Date(),key=d.toISOString().slice(0,10),lastKey=localStorage.getItem('mani_streak_day'),cur=Number(localStorage.getItem('mani_streak')||0);
- let streak=cur;if(lastKey!==key){if(lastKey){const diff=Math.round((new Date(key)-new Date(lastKey))/86400000);streak=diff===1?cur+1:1}else streak=1;localStorage.setItem('mani_streak',String(streak));localStorage.setItem('mani_streak_day',key)}streakEl.textContent=streak+' 🔥'
-}
-updateStreak();draw()
-})();
-</script>
 </body>
 </html>
