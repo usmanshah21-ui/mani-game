@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MANI Sky Flight | Online Plane Game</title>
+<title>MANI Game Zone | Free Arcade Games</title>
 <meta name="description" content="Play MANI Sky Flight, a free online plane flying points game with multiplier-style gameplay and virtual coins.">
 <meta name="keywords" content="free online plane game, plane flying game, multiplier points game, MANI Sky Flight">
 <meta name="robots" content="index,follow">
@@ -130,6 +130,10 @@ svg{width:100%; height:100%}
 .catch-coin{position:absolute;font-size:30px;cursor:pointer;user-select:none}
 .arcade-canvas{display:block;width:100%;max-width:420px;height:auto;margin:0 auto;border:1px solid var(--border);border-radius:16px;background:#07111f;touch-action:none}
 .arcade-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.snake-pad,.puzzle-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;margin:10px auto 0}
+.snake-pad button,.puzzle-controls button{min-height:48px;font-size:20px}
+.puzzle-board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:0 auto;padding:8px;border-radius:16px;background:#0b1220;border:1px solid var(--border)}
+.puzzle-cell{aspect-ratio:1/1;border-radius:10px;background:#182235;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;color:#f8fafc}
 .arcade-control{min-height:52px;font-size:16px}
 .ad-slot{margin:14px 0;padding:12px;border:1px dashed #475569;border-radius:14px;text-align:center;color:#94a3b8;background:rgba(255,255,255,.025);min-height:90px;display:flex;align-items:center;justify-content:center}
 .settings-card{margin-bottom:14px}
@@ -143,8 +147,8 @@ svg{width:100%; height:100%}
 <body>
 <div class="wrap">
   <div class="brand">
-    <h1>MANI SKY FLIGHT</h1>
-    <p>Free Online Plane Flying Game • Virtual Coins Demo</p>
+    <h1>MANI GAME ZONE</h1>
+    <p>Free Mobile Arcade Games • Play, Score & Challenge Friends</p>
   </div>
 
   <div class="card settings-card">
@@ -223,38 +227,59 @@ svg{width:100%; height:100%}
     <div class="label">MANI Game Zone</div>
     <div class="value" style="font-size:24px;margin-bottom:10px">Choose a game</div>
     <div class="game-tabs">
-      <button class="game-tab active" data-game="flight">Sky Flight</button>
-      <button class="game-tab" data-game="flappy">Flappy Plane</button>
-      <button class="game-tab" data-game="dodge">Car Dodge</button>
-      <button class="game-tab" data-game="catch">Coin Catch</button>
+      <button class="game-tab active" data-game="runner">Endless Runner</button>
+      <button class="game-tab" data-game="snake">Snake</button>
+      <button class="game-tab" data-game="puzzle">2048 Puzzle</button>
+      <button class="game-tab" data-game="rush">Car Rush</button>
     </div>
-    <div class="mini-panel show" id="mini-flight"><div class="mini-box"><div class="muted">Main MANI Sky Flight game is above.</div></div></div>
-    <div class="mini-panel" id="mini-flappy"><div class="mini-box">
-      <div class="value" style="font-size:20px">Flappy Plane</div>
-      <div class="muted" style="margin:8px 0 10px">Tap the game to fly through the gaps.</div>
-      <canvas id="flappyCanvas" class="arcade-canvas" width="360" height="480"></canvas>
-      <button class="primary" id="flappyStart" style="width:100%;margin-top:10px">Start Flappy Plane</button>
-      <div class="muted" id="flappyScore" style="margin-top:8px">Best: 0</div>
+
+    <div class="mini-panel show" id="mini-runner"><div class="mini-box">
+      <div class="value" style="font-size:20px">Endless Runner</div>
+      <div class="muted" style="margin:8px 0 10px">Tap JUMP and survive as long as you can.</div>
+      <canvas id="runnerCanvas" class="arcade-canvas" width="360" height="460"></canvas>
+      <button class="big-action" id="runnerJump" style="width:100%;margin-top:10px">JUMP</button>
+      <button class="primary" id="runnerStart" style="width:100%;margin-top:8px">Start Runner</button>
+      <div class="muted" id="runnerScore" style="margin-top:8px">Best: 0</div>
     </div></div>
-    <div class="mini-panel" id="mini-dodge"><div class="mini-box">
-      <div class="value" style="font-size:20px">Car Dodge</div>
-      <div class="muted" style="margin:8px 0 10px">Dodge traffic. Use LEFT and RIGHT.</div>
-      <canvas id="dodgeCanvas" class="arcade-canvas" width="360" height="500"></canvas>
-      <div class="arcade-controls">
-        <button class="big-action arcade-control" id="dodgeLeft">◀ LEFT</button>
-        <button class="big-action arcade-control" id="dodgeRight">RIGHT ▶</button>
+
+    <div class="mini-panel" id="mini-snake"><div class="mini-box">
+      <div class="value" style="font-size:20px">Snake</div>
+      <div class="muted" style="margin:8px 0 10px">Eat food, grow longer, don’t hit the wall.</div>
+      <canvas id="snakeCanvas" class="arcade-canvas" width="360" height="360"></canvas>
+      <div class="snake-pad">
+        <span></span><button class="secondary" id="snakeUp">▲</button><span></span>
+        <button class="secondary" id="snakeLeft">◀</button><button class="secondary" id="snakeDown">▼</button><button class="secondary" id="snakeRight">▶</button>
       </div>
-      <button class="primary" id="dodgeStart" style="width:100%;margin-top:10px">Start Car Dodge</button>
-      <div class="muted" id="dodgeScore" style="margin-top:8px">Best: 0</div>
+      <button class="primary" id="snakeStart" style="width:100%;margin-top:8px">Start Snake</button>
+      <div class="muted" id="snakeScore" style="margin-top:8px">Best: 0</div>
     </div></div>
-    <div class="mini-panel" id="mini-catch"><div class="mini-box">
-      <div class="value" style="font-size:20px">Coin Catch</div>
-      <div class="muted" id="catchScore" style="margin:8px 0 12px">Score: 0</div>
-      <div class="catch-area" id="catchArea"></div>
-      <button class="primary" id="catchStart" style="width:100%;margin-top:10px">Start 20s Game</button>
+
+    <div class="mini-panel" id="mini-puzzle"><div class="mini-box">
+      <div class="value" style="font-size:20px">2048 Puzzle</div>
+      <div class="muted" style="margin:8px 0 10px">Join matching numbers. Reach 2048.</div>
+      <div class="puzzle-board" id="puzzleBoard"></div>
+      <div class="puzzle-controls">
+        <span></span><button class="secondary" id="puzzleUp">▲</button><span></span>
+        <button class="secondary" id="puzzleLeft">◀</button><button class="secondary" id="puzzleDown">▼</button><button class="secondary" id="puzzleRight">▶</button>
+      </div>
+      <button class="primary" id="puzzleReset" style="width:100%;margin-top:8px">New Puzzle</button>
+      <div class="muted" id="puzzleScore" style="margin-top:8px">Score: 0</div>
+    </div></div>
+
+    <div class="mini-panel" id="mini-rush"><div class="mini-box">
+      <div class="value" style="font-size:20px">Car Rush</div>
+      <div class="muted" style="margin:8px 0 10px">Switch lanes, dodge traffic, beat your best.</div>
+      <canvas id="rushCanvas" class="arcade-canvas" width="360" height="500"></canvas>
+      <div class="arcade-controls">
+        <button class="big-action arcade-control" id="rushLeft">◀ LEFT</button>
+        <button class="big-action arcade-control" id="rushRight">RIGHT ▶</button>
+      </div>
+      <button class="primary" id="rushStart" style="width:100%;margin-top:8px">Start Car Rush</button>
+      <div class="muted" id="rushScore" style="margin-top:8px">Best: 0</div>
     </div></div>
   </div>
-<div class="ad-slot" id="adBottom"><small>Advertisement space — activates after ad-network approval</small></div>
+
+  <div class="ad-slot" id="adBottom"><small>Advertisement space — activates after ad-network approval</small></div>
   <div class="card" id="shareCard">
     <div class="row" style="align-items:center">
       <div>
@@ -702,7 +727,7 @@ signinBtn.addEventListener('click', async ()=>{
 
 
 const gameTabs=[...document.querySelectorAll('.game-tab')];
-const miniPanels={flight:document.getElementById('mini-flight'),flappy:document.getElementById('mini-flappy'),dodge:document.getElementById('mini-dodge'),catch:document.getElementById('mini-catch')};
+const miniPanels={runner:document.getElementById('mini-runner'),snake:document.getElementById('mini-snake'),puzzle:document.getElementById('mini-puzzle'),rush:document.getElementById('mini-rush')};
 gameTabs.forEach(btn=>btn.addEventListener('click',()=>{
   gameTabs.forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
@@ -752,87 +777,80 @@ musicVolume.addEventListener('input',()=>{
 });
 if(musicOn){musicToggle.textContent='Music ON';}
 
-// Flappy Plane
-const flappyCanvas=document.getElementById('flappyCanvas'),fctx=flappyCanvas.getContext('2d');
-const flappyStart=document.getElementById('flappyStart'),flappyScore=document.getElementById('flappyScore');
-let fRunning=false,fFrame=0,fScore=0,fBest=Number(localStorage.getItem('mani_flappy_best')||0),fAnim=0;
-let plane={x:78,y:220,vy:0},pipes=[];
-flappyScore.textContent='Best: '+fBest;
-function resetFlappy(){plane={x:78,y:220,vy:0};pipes=[];fFrame=0;fScore=0;}
-function flap(){if(fRunning)plane.vy=-6.4;}
-function drawFlappy(){
-  const w=flappyCanvas.width,h=flappyCanvas.height;
-  const g=fctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#173a69');g.addColorStop(1,'#07111f');
-  fctx.fillStyle=g;fctx.fillRect(0,0,w,h);
-  fctx.fillStyle='rgba(255,255,255,.75)';
-  for(let i=0;i<14;i++){const x=(i*61+fFrame*.25)%420-30,y=28+(i*47)%210;fctx.fillRect(x,y,2,2);}
-  pipes.forEach(p=>{fctx.fillStyle='#22c55e';fctx.fillRect(p.x,0,54,p.top);fctx.fillRect(p.x,p.top+132,54,h-(p.top+132));fctx.fillStyle='#16a34a';fctx.fillRect(p.x-4,p.top-16,62,16);fctx.fillRect(p.x-4,p.top+132,62,16);});
-  fctx.font='34px sans-serif';fctx.fillText('✈️',plane.x-14,plane.y+12);
-  fctx.fillStyle='#fff';fctx.font='bold 22px Arial';fctx.fillText(String(fScore),16,30);
+// Endless Runner
+const runnerCanvas=document.getElementById('runnerCanvas'),rctx=runnerCanvas.getContext('2d');
+const runnerStart=document.getElementById('runnerStart'),runnerJump=document.getElementById('runnerJump'),runnerScoreEl=document.getElementById('runnerScore');
+let rRun=false,rAnim=0,rFrame=0,rScore=0,rBest=Number(localStorage.getItem('mani_runner_best')||0),rY=360,rVy=0,rObs=[];
+runnerScoreEl.textContent='Best: '+rBest;
+function runnerReset(){rFrame=0;rScore=0;rY=360;rVy=0;rObs=[];}
+function runnerJumpDo(){if(rRun&&rY>=359)rVy=-12;}
+function runnerDraw(){
+  const w=runnerCanvas.width,h=runnerCanvas.height;
+  const g=rctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#172554');g.addColorStop(1,'#07111f');rctx.fillStyle=g;rctx.fillRect(0,0,w,h);
+  rctx.fillStyle='#334155';rctx.fillRect(0,405,w,55);
+  rctx.fillStyle='#e2e8f0';for(let x=-(rFrame*5)%50;x<w;x+=50)rctx.fillRect(x,428,28,4);
+  rctx.font='38px sans-serif';rctx.fillText('🏃',60,rY);
+  rObs.forEach(o=>{rctx.font='34px sans-serif';rctx.fillText('🚧',o.x,394);});
+  rctx.fillStyle='#fff';rctx.font='bold 20px Arial';rctx.fillText('Score '+rScore,12,28);
 }
-function endFlappy(){
-  fRunning=false;cancelAnimationFrame(fAnim);
-  if(fScore>fBest){fBest=fScore;localStorage.setItem('mani_flappy_best',String(fBest));}
-  flappyScore.textContent='Score: '+fScore+' • Best: '+fBest;flappyStart.disabled=false;flappyStart.textContent='Play Again';drawFlappy();
+function runnerEnd(){rRun=false;cancelAnimationFrame(rAnim);if(rScore>rBest){rBest=rScore;localStorage.setItem('mani_runner_best',String(rBest));}runnerScoreEl.textContent='Score: '+rScore+' • Best: '+rBest;runnerStart.disabled=false;runnerStart.textContent='Play Again';runnerDraw();}
+function runnerLoop(){
+  if(!rRun)return;rFrame++;rVy+=0.58;rY+=rVy;if(rY>360){rY=360;rVy=0;}
+  if(rFrame%86===0)rObs.push({x:380});rObs.forEach(o=>o.x-=5.2+Math.min(4,rScore/18));
+  for(const o of rObs){if(o.x<98&&o.x>42&&rY>325){runnerEnd();return;}}
+  const before=rObs.length;rObs=rObs.filter(o=>o.x>-45);rScore+=before-rObs.length;
+  runnerDraw();rAnim=requestAnimationFrame(runnerLoop);
 }
-function flappyLoop(){
-  if(!fRunning)return;
-  fFrame++;plane.vy+=0.34;plane.y+=plane.vy;
-  if(fFrame%88===0)pipes.push({x:370,top:65+Math.random()*215,passed:false});
-  pipes.forEach(p=>p.x-=2.75);pipes=pipes.filter(p=>p.x>-70);
-  for(const p of pipes){
-    if(!p.passed&&p.x+54<plane.x){p.passed=true;fScore++;}
-    const hitX=plane.x+16>p.x&&plane.x-12<p.x+54, hitY=plane.y-12<p.top||plane.y+12>p.top+132;
-    if(hitX&&hitY){endFlappy();return;}
-  }
-  if(plane.y<4||plane.y>flappyCanvas.height-8){endFlappy();return;}
-  drawFlappy();fAnim=requestAnimationFrame(flappyLoop);
-}
-flappyStart.addEventListener('click',()=>{resetFlappy();fRunning=true;flappyStart.disabled=true;flappyScore.textContent='Score: 0 • Best: '+fBest;flappyLoop();});
-flappyCanvas.addEventListener('pointerdown',e=>{e.preventDefault();flap();});
-drawFlappy();
+runnerStart.addEventListener('click',()=>{runnerReset();rRun=true;runnerStart.disabled=true;runnerScoreEl.textContent='Score: 0 • Best: '+rBest;runnerLoop();});
+runnerJump.addEventListener('pointerdown',e=>{e.preventDefault();runnerJumpDo();});
+runnerCanvas.addEventListener('pointerdown',e=>{e.preventDefault();runnerJumpDo();});
+runnerDraw();
 
-// Car Dodge
-const dodgeCanvas=document.getElementById('dodgeCanvas'),dctx=dodgeCanvas.getContext('2d');
-const dodgeStart=document.getElementById('dodgeStart'),dodgeLeft=document.getElementById('dodgeLeft'),dodgeRight=document.getElementById('dodgeRight'),dodgeScore=document.getElementById('dodgeScore');
-let dRunning=false,dAnim=0,dFrame=0,dScore=0,dBest=Number(localStorage.getItem('mani_dodge_best')||0),lane=1,cars=[];
-dodgeScore.textContent='Best: '+dBest;
+// Snake
+const snakeCanvas=document.getElementById('snakeCanvas'),sctx=snakeCanvas.getContext('2d');
+const snakeStart=document.getElementById('snakeStart'),snakeScoreEl=document.getElementById('snakeScore');
+let sTimer=null,snake=[],sDir={x:1,y:0},sNext={x:1,y:0},sFood={x:12,y:9},sScore=0,sBest=Number(localStorage.getItem('mani_snake_best')||0),sRunning=false;
+snakeScoreEl.textContent='Best: '+sBest;
+function snakeReset(){snake=[{x:8,y:9},{x:7,y:9},{x:6,y:9}];sDir={x:1,y:0};sNext={x:1,y:0};sScore=0;snakeFood();}
+function snakeFood(){do{sFood={x:Math.floor(Math.random()*18),y:Math.floor(Math.random()*18)};}while(snake.some(p=>p.x===sFood.x&&p.y===sFood.y));}
+function snakeDraw(){sctx.fillStyle='#07111f';sctx.fillRect(0,0,360,360);sctx.fillStyle='#22c55e';snake.forEach((p,i)=>sctx.fillRect(p.x*20+2,p.y*20+2,16,16));sctx.fillStyle='#ef4444';sctx.beginPath();sctx.arc(sFood.x*20+10,sFood.y*20+10,7,0,Math.PI*2);sctx.fill();}
+function snakeEnd(){sRunning=false;clearInterval(sTimer);if(sScore>sBest){sBest=sScore;localStorage.setItem('mani_snake_best',String(sBest));}snakeScoreEl.textContent='Score: '+sScore+' • Best: '+sBest;snakeStart.disabled=false;snakeStart.textContent='Play Again';}
+function snakeTick(){sDir=sNext;const h={x:snake[0].x+sDir.x,y:snake[0].y+sDir.y};if(h.x<0||h.x>=18||h.y<0||h.y>=18||snake.some(p=>p.x===h.x&&p.y===h.y)){snakeEnd();return;}snake.unshift(h);if(h.x===sFood.x&&h.y===sFood.y){sScore++;snakeFood();snakeScoreEl.textContent='Score: '+sScore+' • Best: '+sBest;}else snake.pop();snakeDraw();}
+function snakeSet(x,y){if(!sRunning)return;if(x===-sDir.x&&y===-sDir.y)return;sNext={x,y};}
+document.getElementById('snakeUp').addEventListener('click',()=>snakeSet(0,-1));document.getElementById('snakeDown').addEventListener('click',()=>snakeSet(0,1));document.getElementById('snakeLeft').addEventListener('click',()=>snakeSet(-1,0));document.getElementById('snakeRight').addEventListener('click',()=>snakeSet(1,0));
+snakeStart.addEventListener('click',()=>{snakeReset();snakeDraw();sRunning=true;snakeStart.disabled=true;sTimer=setInterval(snakeTick,125);});
+snakeReset();snakeDraw();
+
+// 2048 Puzzle
+const puzzleBoard=document.getElementById('puzzleBoard'),puzzleScoreEl=document.getElementById('puzzleScore');
+let grid=[],pScore=0;
+function pEmpty(){const a=[];for(let r=0;r<4;r++)for(let col=0;col<4;col++)if(!grid[r][col])a.push([r,col]);return a;}
+function pAdd(){const e=pEmpty();if(!e.length)return;const [r,col]=e[Math.floor(Math.random()*e.length)];grid[r][col]=Math.random()<.9?2:4;}
+function pRender(){puzzleBoard.innerHTML='';grid.flat().forEach(v=>{const d=document.createElement('div');d.className='puzzle-cell';d.textContent=v||'';if(v)d.style.fontSize=v>=1024?'18px':v>=128?'21px':'24px';puzzleBoard.appendChild(d);});puzzleScoreEl.textContent='Score: '+pScore;}
+function pLine(a){const n=a.filter(Boolean);for(let i=0;i<n.length-1;i++){if(n[i]===n[i+1]){n[i]*=2;pScore+=n[i];n.splice(i+1,1);}}while(n.length<4)n.push(0);return n;}
+function pMove(dir){
+ const old=JSON.stringify(grid);
+ if(dir==='left')grid=grid.map(pLine);
+ if(dir==='right')grid=grid.map(r=>pLine([...r].reverse()).reverse());
+ if(dir==='up'){for(let col=0;col<4;col++){const line=pLine([grid[0][col],grid[1][col],grid[2][col],grid[3][col]]);for(let r=0;r<4;r++)grid[r][col]=line[r];}}
+ if(dir==='down'){for(let col=0;col<4;col++){const line=pLine([grid[3][col],grid[2][col],grid[1][col],grid[0][col]]).reverse();for(let r=0;r<4;r++)grid[r][col]=line[r];}}
+ if(JSON.stringify(grid)!==old)pAdd();pRender();
+}
+function pReset(){grid=Array.from({length:4},()=>Array(4).fill(0));pScore=0;pAdd();pAdd();pRender();}
+document.getElementById('puzzleUp').addEventListener('click',()=>pMove('up'));document.getElementById('puzzleDown').addEventListener('click',()=>pMove('down'));document.getElementById('puzzleLeft').addEventListener('click',()=>pMove('left'));document.getElementById('puzzleRight').addEventListener('click',()=>pMove('right'));document.getElementById('puzzleReset').addEventListener('click',pReset);pReset();
+
+// Car Rush
+const rushCanvas=document.getElementById('rushCanvas'),dctx=rushCanvas.getContext('2d');
+const rushStart=document.getElementById('rushStart'),rushScoreEl=document.getElementById('rushScore');
+let dRunning=false,dAnim=0,dFrame=0,dScore=0,dBest=Number(localStorage.getItem('mani_rush_best')||0),lane=1,cars=[];
+rushScoreEl.textContent='Best: '+dBest;
 function roadX(l){return 84+l*96;}
-function resetDodge(){dFrame=0;dScore=0;lane=1;cars=[];}
+function rushReset(){dFrame=0;dScore=0;lane=1;cars=[];}
 function moveLane(dir){if(!dRunning)return;lane=Math.max(0,Math.min(2,lane+dir));}
-function drawDodge(){
-  const w=dodgeCanvas.width,h=dodgeCanvas.height;
-  dctx.fillStyle='#082f49';dctx.fillRect(0,0,w,h);
-  dctx.fillStyle='#1f2937';dctx.fillRect(52,0,256,h);
-  dctx.strokeStyle='#e5e7eb';dctx.lineWidth=4;dctx.setLineDash([24,24]);
-  [148,244].forEach(x=>{dctx.beginPath();dctx.moveTo(x,0);dctx.lineTo(x,h);dctx.stroke();});dctx.setLineDash([]);
-  dctx.font='38px sans-serif';dctx.fillText('🚙',roadX(lane)-20,h-42);
-  cars.forEach(car=>{dctx.font='38px sans-serif';dctx.fillText(car.icon,roadX(car.lane)-20,car.y);});
-  dctx.fillStyle='#fff';dctx.font='bold 20px Arial';dctx.fillText('Score '+dScore,12,28);
-}
-function endDodge(){
-  dRunning=false;cancelAnimationFrame(dAnim);
-  if(dScore>dBest){dBest=dScore;localStorage.setItem('mani_dodge_best',String(dBest));}
-  dodgeScore.textContent='Score: '+dScore+' • Best: '+dBest;dodgeStart.disabled=false;dodgeStart.textContent='Play Again';drawDodge();
-}
-function dodgeLoop(){
-  if(!dRunning)return;
-  dFrame++; if(dFrame%56===0)cars.push({lane:Math.floor(Math.random()*3),y:-30,icon:Math.random()>.5?'🚗':'🚕'});
-  cars.forEach(car=>car.y+=4.5+Math.min(4,dScore/20));
-  for(const car of cars){if(car.y>404&&car.y<480&&car.lane===lane){endDodge();return;}}
-  const before=cars.length;cars=cars.filter(car=>car.y<540);dScore+=before-cars.length;
-  drawDodge();dAnim=requestAnimationFrame(dodgeLoop);
-}
-dodgeStart.addEventListener('click',()=>{resetDodge();dRunning=true;dodgeStart.disabled=true;dodgeScore.textContent='Score: 0 • Best: '+dBest;dodgeLoop();});
-dodgeLeft.addEventListener('pointerdown',e=>{e.preventDefault();moveLane(-1);});
-dodgeRight.addEventListener('pointerdown',e=>{e.preventDefault();moveLane(1);});
-dodgeCanvas.addEventListener('pointerdown',e=>{const r=dodgeCanvas.getBoundingClientRect();moveLane(e.clientX-r.left<r.width/2?-1:1);});
-drawDodge();
-
-const catchArea=document.getElementById('catchArea'), catchStart=document.getElementById('catchStart'), catchScoreEl=document.getElementById('catchScore');
-let catchScore=0,catchRunning=false,catchInterval=null;
-function spawnCoin(){if(!catchRunning)return;const coin=document.createElement('div');coin.className='catch-coin';coin.textContent='🪙';coin.style.left=Math.max(4,Math.random()*(catchArea.clientWidth-40))+'px';coin.style.top=Math.max(4,Math.random()*(catchArea.clientHeight-40))+'px';coin.addEventListener('click',()=>{catchScore++;catchScoreEl.textContent='Score: '+catchScore;coin.remove();});catchArea.appendChild(coin);setTimeout(()=>coin.remove(),1400);}
-catchStart.addEventListener('click',()=>{if(catchRunning)return;catchRunning=true;catchScore=0;catchScoreEl.textContent='Score: 0';catchArea.innerHTML='';catchStart.disabled=true;catchInterval=setInterval(spawnCoin,600);setTimeout(()=>{catchRunning=false;clearInterval(catchInterval);catchArea.innerHTML='';catchStart.disabled=false;catchStart.textContent='Play Again';catchScoreEl.textContent='Final score: '+catchScore;},20000);});
+function rushDraw(){const w=rushCanvas.width,h=rushCanvas.height;dctx.fillStyle='#082f49';dctx.fillRect(0,0,w,h);dctx.fillStyle='#1f2937';dctx.fillRect(52,0,256,h);dctx.strokeStyle='#e5e7eb';dctx.lineWidth=4;dctx.setLineDash([24,24]);[148,244].forEach(x=>{dctx.beginPath();dctx.moveTo(x,0);dctx.lineTo(x,h);dctx.stroke();});dctx.setLineDash([]);dctx.font='38px sans-serif';dctx.fillText('🏎️',roadX(lane)-20,h-42);cars.forEach(car=>{dctx.font='38px sans-serif';dctx.fillText(car.icon,roadX(car.lane)-20,car.y);});dctx.fillStyle='#fff';dctx.font='bold 20px Arial';dctx.fillText('Score '+dScore,12,28);}
+function rushEnd(){dRunning=false;cancelAnimationFrame(dAnim);if(dScore>dBest){dBest=dScore;localStorage.setItem('mani_rush_best',String(dBest));}rushScoreEl.textContent='Score: '+dScore+' • Best: '+dBest;rushStart.disabled=false;rushStart.textContent='Play Again';rushDraw();}
+function rushLoop(){if(!dRunning)return;dFrame++;if(dFrame%54===0)cars.push({lane:Math.floor(Math.random()*3),y:-30,icon:Math.random()>.5?'🚗':'🚕'});cars.forEach(car=>car.y+=5+Math.min(4,dScore/18));for(const car of cars){if(car.y>404&&car.y<480&&car.lane===lane){rushEnd();return;}}const before=cars.length;cars=cars.filter(car=>car.y<540);dScore+=before-cars.length;rushDraw();dAnim=requestAnimationFrame(rushLoop);}
+rushStart.addEventListener('click',()=>{rushReset();dRunning=true;rushStart.disabled=true;rushScoreEl.textContent='Score: 0 • Best: '+dBest;rushLoop();});document.getElementById('rushLeft').addEventListener('pointerdown',e=>{e.preventDefault();moveLane(-1);});document.getElementById('rushRight').addEventListener('pointerdown',e=>{e.preventDefault();moveLane(1);});rushCanvas.addEventListener('pointerdown',e=>{const r=rushCanvas.getBoundingClientRect();moveLane(e.clientX-r.left<r.width/2?-1:1);});rushDraw();
 
 const dailyChallengeTitle=document.getElementById('dailyChallengeTitle');
 const dailyChallengeText=document.getElementById('dailyChallengeText');
@@ -841,10 +859,10 @@ const challengeFriendBtn=document.getElementById('challengeFriendBtn');
 const challengeShareStatus=document.getElementById('challengeShareStatus');
 
 const DAILY_CHALLENGES=[
-  {title:'Flappy Ace',text:'Score 5 or more in Flappy Plane.'},
-  {title:'Traffic Master',text:'Score 8 or more in Car Dodge.'},
-  {title:'Coin Hunter',text:'Catch 12 coins in one Coin Catch round.'},
-  {title:'Sky Pilot',text:'Beat your previous best Sky Flight multiplier.'}
+  {title:'Runner Rush',text:'Score 10 or more in Endless Runner.'},
+  {title:'Snake Master',text:'Score 12 or more in Snake.'},
+  {title:'2048 Climber',text:'Reach the 256 tile in 2048 Puzzle.'},
+  {title:'Road King',text:'Score 15 or more in Car Rush.'}
 ];
 function getDayKey(){
   const d=new Date();
