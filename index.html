@@ -92,12 +92,35 @@ svg{width:100%; height:100%}
 .userline{text-align:center;margin-top:8px;color:var(--muted);font-size:14px}
 @media(max-width:700px){.authgrid{grid-template-columns:1fr}}
 
+.rememberrow{display:flex;align-items:center;gap:8px;margin-top:10px;color:var(--muted);font-size:14px}
+.rememberrow input{width:auto;min-height:auto}
+.sharegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.sharebtn{min-height:46px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text);font-weight:700}
+.sharebtn:hover{background:rgba(255,255,255,.07)}
+.sharestatus{margin-top:10px;font-size:13px;color:var(--muted);text-align:center}
+@media(max-width:700px){.sharegrid{grid-template-columns:1fr 1fr}}
+
 @media(max-width:700px){
   .controls{grid-template-columns:1fr}
   .infobox{grid-template-columns:1fr}
   .bigmult{font-size:44px}
   .brand h1{font-size:28px}
 }
+
+.gamehub{margin-top:16px}
+.game-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.game-tab{padding:10px 8px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text);font-weight:700;cursor:pointer}
+.game-tab.active{background:var(--accent);color:white}
+.mini-panel{display:none}
+.mini-panel.show{display:block}
+.mini-box{border:1px solid var(--border);border-radius:16px;padding:14px;background:rgba(255,255,255,.025)}
+.big-action{width:100%;min-height:90px;border-radius:18px;border:1px solid var(--border);font-size:24px;font-weight:800;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer}
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.memory-card{aspect-ratio:1/1;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:28px;color:transparent;cursor:pointer}
+.memory-card.open,.memory-card.matched{color:var(--text);background:rgba(34,197,94,.12)}
+.catch-area{height:220px;position:relative;overflow:hidden;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.02)}
+.catch-coin{position:absolute;font-size:30px;cursor:pointer;user-select:none}
+@media(max-width:700px){.game-tabs{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -123,10 +146,10 @@ svg{width:100%; height:100%}
     <div class="authpanel" id="signUpPanel">
       <strong>Create account</strong>
       <div class="authgrid" style="margin-top:10px">
-        <input id="signupName" type="text" placeholder="Player name" maxlength="24">
-        <input id="signupEmail" type="email" placeholder="Email address">
-        <input id="signupPassword" type="password" placeholder="Password" minlength="4">
-        <input id="signupPassword2" type="password" placeholder="Confirm password" minlength="4">
+        <input id="signupName" type="text" placeholder="Player name" maxlength="24" autocomplete="name">
+        <input id="signupEmail" type="email" placeholder="Email address" autocomplete="email">
+        <input id="signupPassword" type="password" placeholder="Password" minlength="6" autocomplete="new-password">
+        <input id="signupPassword2" type="password" placeholder="Confirm password" minlength="6" autocomplete="new-password">
       </div>
       <button class="primary" id="createAccountBtn" style="width:100%;margin-top:10px">Create Demo Account</button>
       <div class="authmsg" id="signupMsg">Your account is stored securely with Firebase Authentication.</div>
@@ -135,13 +158,61 @@ svg{width:100%; height:100%}
     <div class="authpanel" id="signInPanel">
       <strong>Sign in</strong>
       <div class="authgrid" style="margin-top:10px">
-        <input id="signinEmail" type="email" placeholder="Email address">
-        <input id="signinPassword" type="password" placeholder="Password">
+        <input id="signinEmail" type="email" placeholder="Email address" autocomplete="username">
+        <input id="signinPassword" type="password" placeholder="Password" autocomplete="current-password">
       </div>
+      <label class="rememberrow"><input id="rememberMe" type="checkbox"> Remember me on this device</label>
       <button class="primary" id="signinBtn" style="width:100%;margin-top:10px">Sign In</button>
-      <div class="authmsg" id="signinMsg">Use the demo account created on this device.</div>
+      <div class="authmsg" id="signinMsg">Your browser may also offer to save your password securely.</div>
     </div>
-    <div class="userline" id="userLine">Sign up to save a demo player name on this browser.</div>
+    <div class="userline" id="userLine">Sign up or sign in to play.</div>
+  </div>
+
+  
+  <div class="card gamehub" id="gameHub">
+    <div class="label">MANI Game Zone</div>
+    <div class="value" style="font-size:24px;margin-bottom:10px">Choose a game</div>
+    <div class="game-tabs">
+      <button class="game-tab active" data-game="flight">Sky Flight</button>
+      <button class="game-tab" data-game="reaction">Reaction</button>
+      <button class="game-tab" data-game="memory">Memory</button>
+      <button class="game-tab" data-game="catch">Coin Catch</button>
+    </div>
+    <div class="mini-panel show" id="mini-flight"><div class="mini-box"><div class="muted">Main MANI Sky Flight game is above.</div></div></div>
+    <div class="mini-panel" id="mini-reaction"><div class="mini-box">
+      <div class="value" style="font-size:20px">Reaction Challenge</div>
+      <div class="muted" id="reactionMsg" style="margin:8px 0 12px">Press Start, then wait for GO!</div>
+      <button class="big-action" id="reactionBtn">START</button>
+      <div class="muted" id="reactionScore" style="margin-top:10px">Best: -- ms</div>
+    </div></div>
+    <div class="mini-panel" id="mini-memory"><div class="mini-box">
+      <div class="value" style="font-size:20px">Memory Match</div>
+      <div class="muted" id="memoryMsg" style="margin:8px 0 12px">Match all the pairs.</div>
+      <div class="memory-grid" id="memoryGrid"></div>
+      <button class="primary" id="memoryReset" style="width:100%;margin-top:10px">New Game</button>
+    </div></div>
+    <div class="mini-panel" id="mini-catch"><div class="mini-box">
+      <div class="value" style="font-size:20px">Coin Catch</div>
+      <div class="muted" id="catchScore" style="margin:8px 0 12px">Score: 0</div>
+      <div class="catch-area" id="catchArea"></div>
+      <button class="primary" id="catchStart" style="width:100%;margin-top:10px">Start 20s Game</button>
+    </div></div>
+  </div>
+<div class="card" id="shareCard">
+    <div class="row" style="align-items:center">
+      <div>
+        <div class="label">Share MANI Sky Flight</div>
+        <div class="value" style="font-size:22px">Invite your friends</div>
+      </div>
+      <button class="primary" id="nativeShareBtn" style="padding:0 18px">Share</button>
+    </div>
+    <div class="sharegrid">
+      <button class="sharebtn" id="facebookShareBtn">Facebook</button>
+      <button class="sharebtn" id="instagramShareBtn">Instagram</button>
+      <button class="sharebtn" id="snapchatShareBtn">Snapchat</button>
+      <button class="sharebtn" id="copyLinkBtn">Copy Link</button>
+    </div>
+    <div class="sharestatus" id="shareStatus">Share the game link with friends.</div>
   </div>
 
   <div class="card">
@@ -279,6 +350,7 @@ signOutBtn=q('#signOutBtn'), signUpPanel=q('#signUpPanel'), signInPanel=q('#sign
 signupName=q('#signupName'), signupEmail=q('#signupEmail'), signupPassword=q('#signupPassword'),
 signupPassword2=q('#signupPassword2'), createAccountBtn=q('#createAccountBtn'),
 signinEmail=q('#signinEmail'), signinPassword=q('#signinPassword'), signinBtn=q('#signinBtn'),
+rememberMe=q('#rememberMe'), nativeShareBtn=q('#nativeShareBtn'), facebookShareBtn=q('#facebookShareBtn'), instagramShareBtn=q('#instagramShareBtn'), snapchatShareBtn=q('#snapchatShareBtn'), copyLinkBtn=q('#copyLinkBtn'), shareStatus=q('#shareStatus'),
 signupMsg=q('#signupMsg'), signinMsg=q('#signinMsg'), userLine=q('#userLine');
 const balanceEl=q('#balance'), bestEl=q('#best'), multEl=q('#multiplier'), statusEl=q('#status'), statusText=q('#statusText'),
 stakeEl=q('#stake'), startBtn=q('#startBtn'), collectBtn=q('#collectBtn'), depositBtn=q('#depositBtn'), resetBtn=q('#resetBtn'),
@@ -468,7 +540,7 @@ accountCard.insertAdjacentElement('afterend', lockNotice);
 function setGameLocked(locked){
   const cards = Array.from(document.querySelectorAll('.card'));
   cards.forEach(card=>{
-    if(card === accountCard || card === lockNotice) return;
+    if(card === accountCard || card === lockNotice || card.id === 'shareCard' || card.id === 'gameHub') return;
     card.style.display = locked ? 'none' : '';
   });
   lockNotice.style.display = locked ? '' : 'none';
@@ -548,11 +620,18 @@ signinBtn.addEventListener('click', async ()=>{
   }
   const email=signinEmail.value.trim().toLowerCase();
   const pass=signinPassword.value;
+  const remember = !!rememberMe.checked;
   if(!email || !pass){signinMsg.textContent='Enter email and password.';return}
 
   signinBtn.disabled = true;
   signinMsg.textContent='Signing in...';
   try{
+    await authApi.setPersistence(
+      firebaseAuth,
+      remember ? authApi.browserLocalPersistence : authApi.browserSessionPersistence
+    );
+    if(remember) localStorage.setItem('mani_remember_email', email);
+    else localStorage.removeItem('mani_remember_email');
     await authApi.signInWithEmailAndPassword(firebaseAuth, email, pass);
     signinMsg.textContent='Signed in.';
     hideAuthPanels();
@@ -562,6 +641,77 @@ signinBtn.addEventListener('click', async ()=>{
     signinBtn.disabled = false;
   }
 });
+
+
+
+const gameTabs=[...document.querySelectorAll('.game-tab')];
+const miniPanels={flight:document.getElementById('mini-flight'),reaction:document.getElementById('mini-reaction'),memory:document.getElementById('mini-memory'),catch:document.getElementById('mini-catch')};
+gameTabs.forEach(btn=>btn.addEventListener('click',()=>{gameTabs.forEach(b=>b.classList.remove('active'));btn.classList.add('active');Object.values(miniPanels).forEach(p=>p.classList.remove('show'));miniPanels[btn.dataset.game].classList.add('show');}));
+
+const reactionBtn=document.getElementById('reactionBtn'), reactionMsg=document.getElementById('reactionMsg'), reactionScore=document.getElementById('reactionScore');
+let reactionTimer=null,reactionStart=0,reactionState='idle',bestReaction=Number(localStorage.getItem('mani_best_reaction')||0);
+if(bestReaction) reactionScore.textContent='Best: '+bestReaction+' ms';
+reactionBtn.addEventListener('click',()=>{
+  if(reactionState==='idle'){reactionState='waiting';reactionBtn.textContent='WAIT...';reactionMsg.textContent='Wait for GO — do not tap early.';reactionTimer=setTimeout(()=>{reactionState='go';reactionStart=performance.now();reactionBtn.textContent='GO!';reactionMsg.textContent='Tap now!';},1200+Math.random()*2500);}
+  else if(reactionState==='waiting'){clearTimeout(reactionTimer);reactionState='idle';reactionBtn.textContent='START';reactionMsg.textContent='Too early! Try again.';}
+  else {const ms=Math.round(performance.now()-reactionStart);if(!bestReaction||ms<bestReaction){bestReaction=ms;localStorage.setItem('mani_best_reaction',String(ms));}reactionScore.textContent='Best: '+bestReaction+' ms';reactionMsg.textContent='Your time: '+ms+' ms';reactionBtn.textContent='START';reactionState='idle';}
+});
+
+const memoryGrid=document.getElementById('memoryGrid'), memoryMsg=document.getElementById('memoryMsg'), memoryReset=document.getElementById('memoryReset');
+const memoryIcons=['✈️','🚀','⭐','☁️','✈️','🚀','⭐','☁️']; let memoryOpen=[],memoryLock=false;
+function startMemory(){memoryOpen=[];memoryLock=false;memoryMsg.textContent='Match all the pairs.';memoryGrid.innerHTML='';[...memoryIcons].sort(()=>Math.random()-.5).forEach(icon=>{const b=document.createElement('button');b.className='memory-card';b.textContent=icon;b.dataset.icon=icon;b.addEventListener('click',()=>flipMemory(b));memoryGrid.appendChild(b);});}
+function flipMemory(card){if(memoryLock||card.classList.contains('matched')||card.classList.contains('open'))return;card.classList.add('open');memoryOpen.push(card);if(memoryOpen.length===2){const[a,b]=memoryOpen;if(a.dataset.icon===b.dataset.icon){a.classList.add('matched');b.classList.add('matched');a.classList.remove('open');b.classList.remove('open');memoryOpen=[];if([...memoryGrid.children].every(x=>x.classList.contains('matched')))memoryMsg.textContent='Great! You matched them all.';}else{memoryLock=true;setTimeout(()=>{a.classList.remove('open');b.classList.remove('open');memoryOpen=[];memoryLock=false;},700);}}}
+memoryReset.addEventListener('click',startMemory); startMemory();
+
+const catchArea=document.getElementById('catchArea'), catchStart=document.getElementById('catchStart'), catchScoreEl=document.getElementById('catchScore');
+let catchScore=0,catchRunning=false,catchInterval=null;
+function spawnCoin(){if(!catchRunning)return;const coin=document.createElement('div');coin.className='catch-coin';coin.textContent='🪙';coin.style.left=Math.max(4,Math.random()*(catchArea.clientWidth-40))+'px';coin.style.top=Math.max(4,Math.random()*(catchArea.clientHeight-40))+'px';coin.addEventListener('click',()=>{catchScore++;catchScoreEl.textContent='Score: '+catchScore;coin.remove();});catchArea.appendChild(coin);setTimeout(()=>coin.remove(),1400);}
+catchStart.addEventListener('click',()=>{if(catchRunning)return;catchRunning=true;catchScore=0;catchScoreEl.textContent='Score: 0';catchArea.innerHTML='';catchStart.disabled=true;catchInterval=setInterval(spawnCoin,600);setTimeout(()=>{catchRunning=false;clearInterval(catchInterval);catchArea.innerHTML='';catchStart.disabled=false;catchStart.textContent='Play Again';catchScoreEl.textContent='Final score: '+catchScore;},20000);});
+
+const GAME_URL = 'https://mani-sky-flight.web.app/';
+const SHARE_TEXT = 'Play MANI Sky Flight';
+
+async function nativeShare(){
+  try{
+    if(navigator.share){
+      await navigator.share({title:'MANI Sky Flight', text:SHARE_TEXT, url:GAME_URL});
+      shareStatus.textContent='Share sheet opened.';
+    }else{
+      await navigator.clipboard.writeText(GAME_URL);
+      shareStatus.textContent='Link copied. Paste it into any app.';
+    }
+  }catch(e){
+    if(e && e.name !== 'AbortError') shareStatus.textContent='Could not share. Try Copy Link.';
+  }
+}
+nativeShareBtn.addEventListener('click', nativeShare);
+
+facebookShareBtn.addEventListener('click', ()=>{
+  const u = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(GAME_URL);
+  window.open(u, '_blank', 'noopener');
+});
+
+instagramShareBtn.addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(GAME_URL); }catch(e){}
+  shareStatus.textContent='Game link copied. Paste it into Instagram.';
+  window.open('https://www.instagram.com/', '_blank', 'noopener');
+});
+
+snapchatShareBtn.addEventListener('click', async ()=>{
+  try{ await navigator.clipboard.writeText(GAME_URL); }catch(e){}
+  shareStatus.textContent='Game link copied. Paste it into Snapchat.';
+  window.open('https://www.snapchat.com/', '_blank', 'noopener');
+});
+
+copyLinkBtn.addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(GAME_URL);
+    shareStatus.textContent='Game link copied.';
+  }catch(e){
+    shareStatus.textContent=GAME_URL;
+  }
+});
+
 
 signOutBtn.addEventListener('click', async ()=>{
   if(firebaseAuth && authApi){
@@ -576,6 +726,11 @@ signOutBtn.addEventListener('click', async ()=>{
     const authMod = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
     const app = appMod.initializeApp(firebaseConfig);
     firebaseAuth = authMod.getAuth(app);
+    const rememberedEmail = localStorage.getItem('mani_remember_email') || '';
+    if(rememberedEmail){
+      signinEmail.value = rememberedEmail;
+      rememberMe.checked = true;
+    }
     authApi = authMod;
     authMod.onAuthStateChanged(firebaseAuth, renderFirebaseUser);
   }catch(e){
