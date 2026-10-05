@@ -120,6 +120,15 @@ svg{width:100%; height:100%}
 .memory-card.open,.memory-card.matched{color:var(--text);background:rgba(34,197,94,.12)}
 .catch-area{height:220px;position:relative;overflow:hidden;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.02)}
 .catch-coin{position:absolute;font-size:30px;cursor:pointer;user-select:none}
+.arcade-canvas{display:block;width:100%;max-width:420px;height:auto;margin:0 auto;border:1px solid var(--border);border-radius:16px;background:#07111f;touch-action:none}
+.arcade-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.arcade-control{min-height:52px;font-size:16px}
+.ad-slot{margin:14px 0;padding:12px;border:1px dashed #475569;border-radius:14px;text-align:center;color:#94a3b8;background:rgba(255,255,255,.025);min-height:90px;display:flex;align-items:center;justify-content:center}
+.settings-card{margin-bottom:14px}
+.settings-grid{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.toggle-btn{min-width:92px}
+.volume-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-top:10px}
+.volume-row input{width:100%}
 @media(max-width:700px){.game-tabs{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -128,6 +137,22 @@ svg{width:100%; height:100%}
   <div class="brand">
     <h1>MANI SKY FLIGHT</h1>
     <p>Free Online Plane Flying Game • Virtual Coins Demo</p>
+  </div>
+
+  <div class="card settings-card">
+    <div class="settings-grid">
+      <div>
+        <div class="label">Settings</div>
+        <div class="value" style="font-size:20px">Background Music</div>
+      </div>
+      <button class="secondary toggle-btn" id="musicToggle">Music OFF</button>
+    </div>
+    <div class="volume-row">
+      <span class="muted">🔈</span>
+      <input id="musicVolume" type="range" min="0" max="100" value="22" aria-label="Music volume">
+      <span class="muted" id="musicVolumeLabel">22%</span>
+    </div>
+    <div class="muted" style="margin-top:8px">Soft ambient instrumental sound. Tap Music ON to start.</div>
   </div>
 
   <div class="card">
@@ -169,27 +194,34 @@ svg{width:100%; height:100%}
   </div>
 
   
+  <div class="ad-slot" id="adTop"><small>Advertisement space — activates after ad-network approval</small></div>
   <div class="card gamehub" id="gameHub">
     <div class="label">MANI Game Zone</div>
     <div class="value" style="font-size:24px;margin-bottom:10px">Choose a game</div>
     <div class="game-tabs">
       <button class="game-tab active" data-game="flight">Sky Flight</button>
-      <button class="game-tab" data-game="reaction">Reaction</button>
-      <button class="game-tab" data-game="memory">Memory</button>
+      <button class="game-tab" data-game="flappy">Flappy Plane</button>
+      <button class="game-tab" data-game="dodge">Car Dodge</button>
       <button class="game-tab" data-game="catch">Coin Catch</button>
     </div>
     <div class="mini-panel show" id="mini-flight"><div class="mini-box"><div class="muted">Main MANI Sky Flight game is above.</div></div></div>
-    <div class="mini-panel" id="mini-reaction"><div class="mini-box">
-      <div class="value" style="font-size:20px">Reaction Challenge</div>
-      <div class="muted" id="reactionMsg" style="margin:8px 0 12px">Press Start, then wait for GO!</div>
-      <button class="big-action" id="reactionBtn">START</button>
-      <div class="muted" id="reactionScore" style="margin-top:10px">Best: -- ms</div>
+    <div class="mini-panel" id="mini-flappy"><div class="mini-box">
+      <div class="value" style="font-size:20px">Flappy Plane</div>
+      <div class="muted" style="margin:8px 0 10px">Tap the game to fly through the gaps.</div>
+      <canvas id="flappyCanvas" class="arcade-canvas" width="360" height="480"></canvas>
+      <button class="primary" id="flappyStart" style="width:100%;margin-top:10px">Start Flappy Plane</button>
+      <div class="muted" id="flappyScore" style="margin-top:8px">Best: 0</div>
     </div></div>
-    <div class="mini-panel" id="mini-memory"><div class="mini-box">
-      <div class="value" style="font-size:20px">Memory Match</div>
-      <div class="muted" id="memoryMsg" style="margin:8px 0 12px">Match all the pairs.</div>
-      <div class="memory-grid" id="memoryGrid"></div>
-      <button class="primary" id="memoryReset" style="width:100%;margin-top:10px">New Game</button>
+    <div class="mini-panel" id="mini-dodge"><div class="mini-box">
+      <div class="value" style="font-size:20px">Car Dodge</div>
+      <div class="muted" style="margin:8px 0 10px">Dodge traffic. Use LEFT and RIGHT.</div>
+      <canvas id="dodgeCanvas" class="arcade-canvas" width="360" height="500"></canvas>
+      <div class="arcade-controls">
+        <button class="big-action arcade-control" id="dodgeLeft">◀ LEFT</button>
+        <button class="big-action arcade-control" id="dodgeRight">RIGHT ▶</button>
+      </div>
+      <button class="primary" id="dodgeStart" style="width:100%;margin-top:10px">Start Car Dodge</button>
+      <div class="muted" id="dodgeScore" style="margin-top:8px">Best: 0</div>
     </div></div>
     <div class="mini-panel" id="mini-catch"><div class="mini-box">
       <div class="value" style="font-size:20px">Coin Catch</div>
@@ -198,7 +230,8 @@ svg{width:100%; height:100%}
       <button class="primary" id="catchStart" style="width:100%;margin-top:10px">Start 20s Game</button>
     </div></div>
   </div>
-<div class="card" id="shareCard">
+<div class="ad-slot" id="adBottom"><small>Advertisement space — activates after ad-network approval</small></div>
+  <div class="card" id="shareCard">
     <div class="row" style="align-items:center">
       <div>
         <div class="label">Share MANI Sky Flight</div>
@@ -645,30 +678,139 @@ signinBtn.addEventListener('click', async ()=>{
 
 
 const gameTabs=[...document.querySelectorAll('.game-tab')];
-const miniPanels={flight:document.getElementById('mini-flight'),reaction:document.getElementById('mini-reaction'),memory:document.getElementById('mini-memory'),catch:document.getElementById('mini-catch')};
-gameTabs.forEach(btn=>btn.addEventListener('click',()=>{gameTabs.forEach(b=>b.classList.remove('active'));btn.classList.add('active');Object.values(miniPanels).forEach(p=>p.classList.remove('show'));miniPanels[btn.dataset.game].classList.add('show');}));
+const miniPanels={flight:document.getElementById('mini-flight'),flappy:document.getElementById('mini-flappy'),dodge:document.getElementById('mini-dodge'),catch:document.getElementById('mini-catch')};
+gameTabs.forEach(btn=>btn.addEventListener('click',()=>{
+  gameTabs.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  Object.values(miniPanels).forEach(p=>p.classList.remove('show'));
+  miniPanels[btn.dataset.game].classList.add('show');
+}));
 
-const reactionBtn=document.getElementById('reactionBtn'), reactionMsg=document.getElementById('reactionMsg'), reactionScore=document.getElementById('reactionScore');
-let reactionTimer=null,reactionStart=0,reactionState='idle',bestReaction=Number(localStorage.getItem('mani_best_reaction')||0);
-if(bestReaction) reactionScore.textContent='Best: '+bestReaction+' ms';
-reactionBtn.addEventListener('click',()=>{
-  if(reactionState==='idle'){reactionState='waiting';reactionBtn.textContent='WAIT...';reactionMsg.textContent='Wait for GO — do not tap early.';reactionTimer=setTimeout(()=>{reactionState='go';reactionStart=performance.now();reactionBtn.textContent='GO!';reactionMsg.textContent='Tap now!';},1200+Math.random()*2500);}
-  else if(reactionState==='waiting'){clearTimeout(reactionTimer);reactionState='idle';reactionBtn.textContent='START';reactionMsg.textContent='Too early! Try again.';}
-  else {const ms=Math.round(performance.now()-reactionStart);if(!bestReaction||ms<bestReaction){bestReaction=ms;localStorage.setItem('mani_best_reaction',String(ms));}reactionScore.textContent='Best: '+bestReaction+' ms';reactionMsg.textContent='Your time: '+ms+' ms';reactionBtn.textContent='START';reactionState='idle';}
+// Relaxing generated background music (no external audio file)
+const musicToggle=document.getElementById('musicToggle'), musicVolume=document.getElementById('musicVolume'), musicVolumeLabel=document.getElementById('musicVolumeLabel');
+let musicCtx=null,musicGain=null,musicTimer=null,musicOn=localStorage.getItem('mani_music_on')==='1';
+let musicVol=Number(localStorage.getItem('mani_music_vol')||22);
+musicVolume.value=String(musicVol); musicVolumeLabel.textContent=musicVol+'%';
+function scheduleTone(freq,start,dur,level=.06){
+  const osc=musicCtx.createOscillator(),g=musicCtx.createGain();
+  osc.type='sine';osc.frequency.value=freq;
+  g.gain.setValueAtTime(0,start);g.gain.linearRampToValueAtTime(level,start+.7);
+  g.gain.linearRampToValueAtTime(0,start+dur);
+  osc.connect(g);g.connect(musicGain);osc.start(start);osc.stop(start+dur+.1);
+}
+function startMusic(){
+  if(musicOn&&musicCtx)return;
+  musicCtx=new (window.AudioContext||window.webkitAudioContext)();
+  musicGain=musicCtx.createGain();musicGain.gain.value=(musicVol/100)*0.7;musicGain.connect(musicCtx.destination);
+  const chords=[[261.63,329.63,392],[220,261.63,329.63],[196,246.94,293.66],[233.08,293.66,349.23]];
+  let step=0;
+  const playChord=()=>{
+    if(!musicCtx)return;
+    const now=musicCtx.currentTime+.05, chord=chords[step%chords.length];
+    chord.forEach((f,i)=>scheduleTone(f,now+i*.08,4.8,.035));
+    scheduleTone(chord[0]/2,now,5,.028);
+    step++;
+  };
+  playChord();musicTimer=setInterval(playChord,4600);
+  musicOn=true;localStorage.setItem('mani_music_on','1');musicToggle.textContent='Music ON';
+}
+function stopMusic(){
+  musicOn=false;localStorage.setItem('mani_music_on','0');musicToggle.textContent='Music OFF';
+  if(musicTimer){clearInterval(musicTimer);musicTimer=null;}
+  if(musicCtx){musicCtx.close();musicCtx=null;musicGain=null;}
+}
+musicToggle.textContent=musicOn?'Music ON':'Music OFF';
+musicToggle.addEventListener('click',()=>musicOn?stopMusic():startMusic());
+musicVolume.addEventListener('input',()=>{
+  musicVol=Number(musicVolume.value);musicVolumeLabel.textContent=musicVol+'%';
+  localStorage.setItem('mani_music_vol',String(musicVol));
+  if(musicGain)musicGain.gain.value=(musicVol/100)*0.7;
 });
+if(musicOn){musicToggle.textContent='Music ON';}
 
-const memoryGrid=document.getElementById('memoryGrid'), memoryMsg=document.getElementById('memoryMsg'), memoryReset=document.getElementById('memoryReset');
-const memoryIcons=['✈️','🚀','⭐','☁️','✈️','🚀','⭐','☁️']; let memoryOpen=[],memoryLock=false;
-function startMemory(){memoryOpen=[];memoryLock=false;memoryMsg.textContent='Match all the pairs.';memoryGrid.innerHTML='';[...memoryIcons].sort(()=>Math.random()-.5).forEach(icon=>{const b=document.createElement('button');b.className='memory-card';b.textContent=icon;b.dataset.icon=icon;b.addEventListener('click',()=>flipMemory(b));memoryGrid.appendChild(b);});}
-function flipMemory(card){if(memoryLock||card.classList.contains('matched')||card.classList.contains('open'))return;card.classList.add('open');memoryOpen.push(card);if(memoryOpen.length===2){const[a,b]=memoryOpen;if(a.dataset.icon===b.dataset.icon){a.classList.add('matched');b.classList.add('matched');a.classList.remove('open');b.classList.remove('open');memoryOpen=[];if([...memoryGrid.children].every(x=>x.classList.contains('matched')))memoryMsg.textContent='Great! You matched them all.';}else{memoryLock=true;setTimeout(()=>{a.classList.remove('open');b.classList.remove('open');memoryOpen=[];memoryLock=false;},700);}}}
-memoryReset.addEventListener('click',startMemory); startMemory();
+// Flappy Plane
+const flappyCanvas=document.getElementById('flappyCanvas'),fctx=flappyCanvas.getContext('2d');
+const flappyStart=document.getElementById('flappyStart'),flappyScore=document.getElementById('flappyScore');
+let fRunning=false,fFrame=0,fScore=0,fBest=Number(localStorage.getItem('mani_flappy_best')||0),fAnim=0;
+let plane={x:78,y:220,vy:0},pipes=[];
+flappyScore.textContent='Best: '+fBest;
+function resetFlappy(){plane={x:78,y:220,vy:0};pipes=[];fFrame=0;fScore=0;}
+function flap(){if(fRunning)plane.vy=-6.4;}
+function drawFlappy(){
+  const w=flappyCanvas.width,h=flappyCanvas.height;
+  const g=fctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#173a69');g.addColorStop(1,'#07111f');
+  fctx.fillStyle=g;fctx.fillRect(0,0,w,h);
+  fctx.fillStyle='rgba(255,255,255,.75)';
+  for(let i=0;i<14;i++){const x=(i*61+fFrame*.25)%420-30,y=28+(i*47)%210;fctx.fillRect(x,y,2,2);}
+  pipes.forEach(p=>{fctx.fillStyle='#22c55e';fctx.fillRect(p.x,0,54,p.top);fctx.fillRect(p.x,p.top+132,54,h-(p.top+132));fctx.fillStyle='#16a34a';fctx.fillRect(p.x-4,p.top-16,62,16);fctx.fillRect(p.x-4,p.top+132,62,16);});
+  fctx.font='34px sans-serif';fctx.fillText('✈️',plane.x-14,plane.y+12);
+  fctx.fillStyle='#fff';fctx.font='bold 22px Arial';fctx.fillText(String(fScore),16,30);
+}
+function endFlappy(){
+  fRunning=false;cancelAnimationFrame(fAnim);
+  if(fScore>fBest){fBest=fScore;localStorage.setItem('mani_flappy_best',String(fBest));}
+  flappyScore.textContent='Score: '+fScore+' • Best: '+fBest;flappyStart.disabled=false;flappyStart.textContent='Play Again';drawFlappy();
+}
+function flappyLoop(){
+  if(!fRunning)return;
+  fFrame++;plane.vy+=0.34;plane.y+=plane.vy;
+  if(fFrame%88===0)pipes.push({x:370,top:65+Math.random()*215,passed:false});
+  pipes.forEach(p=>p.x-=2.75);pipes=pipes.filter(p=>p.x>-70);
+  for(const p of pipes){
+    if(!p.passed&&p.x+54<plane.x){p.passed=true;fScore++;}
+    const hitX=plane.x+16>p.x&&plane.x-12<p.x+54, hitY=plane.y-12<p.top||plane.y+12>p.top+132;
+    if(hitX&&hitY){endFlappy();return;}
+  }
+  if(plane.y<4||plane.y>flappyCanvas.height-8){endFlappy();return;}
+  drawFlappy();fAnim=requestAnimationFrame(flappyLoop);
+}
+flappyStart.addEventListener('click',()=>{resetFlappy();fRunning=true;flappyStart.disabled=true;flappyScore.textContent='Score: 0 • Best: '+fBest;flappyLoop();});
+flappyCanvas.addEventListener('pointerdown',e=>{e.preventDefault();flap();});
+drawFlappy();
+
+// Car Dodge
+const dodgeCanvas=document.getElementById('dodgeCanvas'),dctx=dodgeCanvas.getContext('2d');
+const dodgeStart=document.getElementById('dodgeStart'),dodgeLeft=document.getElementById('dodgeLeft'),dodgeRight=document.getElementById('dodgeRight'),dodgeScore=document.getElementById('dodgeScore');
+let dRunning=false,dAnim=0,dFrame=0,dScore=0,dBest=Number(localStorage.getItem('mani_dodge_best')||0),lane=1,cars=[];
+dodgeScore.textContent='Best: '+dBest;
+function roadX(l){return 84+l*96;}
+function resetDodge(){dFrame=0;dScore=0;lane=1;cars=[];}
+function moveLane(dir){if(!dRunning)return;lane=Math.max(0,Math.min(2,lane+dir));}
+function drawDodge(){
+  const w=dodgeCanvas.width,h=dodgeCanvas.height;
+  dctx.fillStyle='#082f49';dctx.fillRect(0,0,w,h);
+  dctx.fillStyle='#1f2937';dctx.fillRect(52,0,256,h);
+  dctx.strokeStyle='#e5e7eb';dctx.lineWidth=4;dctx.setLineDash([24,24]);
+  [148,244].forEach(x=>{dctx.beginPath();dctx.moveTo(x,0);dctx.lineTo(x,h);dctx.stroke();});dctx.setLineDash([]);
+  dctx.font='38px sans-serif';dctx.fillText('🚙',roadX(lane)-20,h-42);
+  cars.forEach(car=>{dctx.font='38px sans-serif';dctx.fillText(car.icon,roadX(car.lane)-20,car.y);});
+  dctx.fillStyle='#fff';dctx.font='bold 20px Arial';dctx.fillText('Score '+dScore,12,28);
+}
+function endDodge(){
+  dRunning=false;cancelAnimationFrame(dAnim);
+  if(dScore>dBest){dBest=dScore;localStorage.setItem('mani_dodge_best',String(dBest));}
+  dodgeScore.textContent='Score: '+dScore+' • Best: '+dBest;dodgeStart.disabled=false;dodgeStart.textContent='Play Again';drawDodge();
+}
+function dodgeLoop(){
+  if(!dRunning)return;
+  dFrame++; if(dFrame%56===0)cars.push({lane:Math.floor(Math.random()*3),y:-30,icon:Math.random()>.5?'🚗':'🚕'});
+  cars.forEach(car=>car.y+=4.5+Math.min(4,dScore/20));
+  for(const car of cars){if(car.y>404&&car.y<480&&car.lane===lane){endDodge();return;}}
+  const before=cars.length;cars=cars.filter(car=>car.y<540);dScore+=before-cars.length;
+  drawDodge();dAnim=requestAnimationFrame(dodgeLoop);
+}
+dodgeStart.addEventListener('click',()=>{resetDodge();dRunning=true;dodgeStart.disabled=true;dodgeScore.textContent='Score: 0 • Best: '+dBest;dodgeLoop();});
+dodgeLeft.addEventListener('pointerdown',e=>{e.preventDefault();moveLane(-1);});
+dodgeRight.addEventListener('pointerdown',e=>{e.preventDefault();moveLane(1);});
+dodgeCanvas.addEventListener('pointerdown',e=>{const r=dodgeCanvas.getBoundingClientRect();moveLane(e.clientX-r.left<r.width/2?-1:1);});
+drawDodge();
 
 const catchArea=document.getElementById('catchArea'), catchStart=document.getElementById('catchStart'), catchScoreEl=document.getElementById('catchScore');
 let catchScore=0,catchRunning=false,catchInterval=null;
 function spawnCoin(){if(!catchRunning)return;const coin=document.createElement('div');coin.className='catch-coin';coin.textContent='🪙';coin.style.left=Math.max(4,Math.random()*(catchArea.clientWidth-40))+'px';coin.style.top=Math.max(4,Math.random()*(catchArea.clientHeight-40))+'px';coin.addEventListener('click',()=>{catchScore++;catchScoreEl.textContent='Score: '+catchScore;coin.remove();});catchArea.appendChild(coin);setTimeout(()=>coin.remove(),1400);}
 catchStart.addEventListener('click',()=>{if(catchRunning)return;catchRunning=true;catchScore=0;catchScoreEl.textContent='Score: 0';catchArea.innerHTML='';catchStart.disabled=true;catchInterval=setInterval(spawnCoin,600);setTimeout(()=>{catchRunning=false;clearInterval(catchInterval);catchArea.innerHTML='';catchStart.disabled=false;catchStart.textContent='Play Again';catchScoreEl.textContent='Final score: '+catchScore;},20000);});
 
-const GAME_URL = 'https://mani-sky-flight.web.app/';
+const GAME_URL = 'https://usmanshah21-ui.github.io/mani-game/';
 const SHARE_TEXT = 'Play MANI Sky Flight';
 
 async function nativeShare(){
